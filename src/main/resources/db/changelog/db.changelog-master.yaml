@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-initial-schema
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 001-create-users-and-organisations.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql:
+            sql: |
+              DROP TABLE IF EXISTS organisations;
+              DROP TABLE IF EXISTS users;
