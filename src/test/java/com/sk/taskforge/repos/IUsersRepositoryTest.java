@@ -8,8 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -28,19 +26,18 @@ class IUsersRepositoryTest {
 
     @Test
     void saveShouldPersistAndFindUserById() {
-        UUID userId = UUID.fromString("3f8b95f0-b9d3-4eb9-b5c8-2572148ec9f1");
         Users user = Users.builder()
-                .id(userId)
                 .name("Sahil Kumar")
                 .email("sahil@example.com")
                 .build();
 
-        usersRepository.saveAndFlush(user);
+        Users savedUser = usersRepository.saveAndFlush(user);
         entityManager.clear();
 
-        Optional<Users> result = usersRepository.findById(userId);
+        Optional<Users> result = usersRepository.findById(savedUser.getId());
 
         assertThat(result).isPresent();
+        assertThat(result.get().getId()).isNotNull();
         assertThat(result.get().getName()).isEqualTo("Sahil Kumar");
         assertThat(result.get().getEmail()).isEqualTo("sahil@example.com");
         assertThat(result.get().getCreatedAt()).isNotNull();
@@ -49,19 +46,17 @@ class IUsersRepositoryTest {
 
     @Test
     void deleteByIdShouldRemovePersistedUser() {
-        UUID userId = UUID.fromString("066f3d31-6df5-4b2a-a0e4-d344b6a07121");
         Users user = Users.builder()
-                .id(userId)
                 .name("Deleted User")
                 .email("deleted@example.com")
                 .build();
 
-        usersRepository.saveAndFlush(user);
+        Users savedUser = usersRepository.saveAndFlush(user);
 
-        usersRepository.deleteById(userId);
+        usersRepository.deleteById(savedUser.getId());
         usersRepository.flush();
         entityManager.clear();
 
-        assertThat(usersRepository.findById(userId)).isEmpty();
+        assertThat(usersRepository.findById(savedUser.getId())).isEmpty();
     }
 }

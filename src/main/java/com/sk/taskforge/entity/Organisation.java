@@ -5,34 +5,29 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Table(
-        name = "users",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uq_users_email",
-                columnNames = {"email"}
-        )
-)
 @Entity
+@Table(name = "organisations")
 @Getter
 @Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Users {
+public class Organisation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable=false)
     private String name;
 
-    @Column(name = "email" , nullable = false)
-    private String email;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Users owner;
 
     @CreationTimestamp
     @Column(nullable=false, updatable = false)
