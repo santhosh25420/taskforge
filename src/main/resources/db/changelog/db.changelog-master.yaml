@@ -27,3 +27,17 @@ databaseChangeLog:
           - sql:
               sql: |
                 DROP TABLE IF EXISTS projects;
+
+  - changeSet:
+      id: 003-create-organisation_members-table
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 003-create-organisation_members-table.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql:
+            sql: |
+              DROP TABLE IF EXISTS organisation_members;

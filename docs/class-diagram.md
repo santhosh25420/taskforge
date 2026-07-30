@@ -79,6 +79,7 @@ classDiagram
 
 Users "1" --> "*" Organisations
 Organisations "1" --> "*" Projects
+Organisations "1" --> "*" OrganisationMembers
 Users "1" --> "1" OrganisationMembers
 Projects "1" --> "*" ProjectMembers
 Users "1" --> "*" ProjectMembers
