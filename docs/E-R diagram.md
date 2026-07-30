@@ -1,5 +1,6 @@
 ```mermaid
 erDiagram
+    
     USERS ||--o{ ORGANISATIONS : owns
     ORGANISATIONS ||--o{ PROJECTS : contains
     ORGANISATIONS ||--o{ ORGANISATION_MEMBERS : has
@@ -14,8 +15,8 @@ erDiagram
     
     PROJECTS ||--o{ TASKS : contains
     TEAMS ||--o{ TASKS: contains
-    TEAM_MEMBERS ||--o{ TASKS : owns
-    TEAM_MEMBERS ||--o{ TASKS : assigned_to
+    TEAM_MEMBERS ||--o{ TASKS : owns_by_owner_id
+    TEAM_MEMBERS ||--o{ TASKS : assigned_by_assignee_id
     
     ORGANISATIONS ||--o{ LABELS : has
     TASKS ||--o{ TASK_LABELS: tagged_with
@@ -40,6 +41,7 @@ erDiagram
         uuid id pk
         uuid organisation_id fk
         uuid user_id fk
+        varchar name
         varchar role
         timestamp audits
  }
@@ -101,5 +103,6 @@ erDiagram
         uuid label_id fk
         timestamp audits
  }
-    
+
 ```
+
