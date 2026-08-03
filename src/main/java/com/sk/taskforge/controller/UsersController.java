@@ -2,6 +2,7 @@ package com.sk.taskforge.controller;
 
 import com.sk.taskforge.dto.UsersDto;
 import com.sk.taskforge.service.IUsersServices;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class UsersController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Boolean> createUser(@RequestBody UsersDto usersDto){
+    public ResponseEntity<Boolean> createUser(@RequestBody @Valid UsersDto usersDto){
         boolean result=  usersServices.addUsers(usersDto);
         return ResponseEntity.ok(result);
     }
