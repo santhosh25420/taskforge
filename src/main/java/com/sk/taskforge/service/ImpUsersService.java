@@ -3,6 +3,7 @@ package com.sk.taskforge.service;
 import com.sk.taskforge.dto.UsersDto;
 import com.sk.taskforge.entity.Users;
 import com.sk.taskforge.exception.EmptyDataException;
+import com.sk.taskforge.mapper.UsersMapper;
 import com.sk.taskforge.repos.IUsersRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,24 +14,29 @@ import java.util.UUID;
 @Service
 public class ImpUsersService implements IUsersServices{
     private IUsersRepository userRepo;
+    private UsersMapper mapper;
 
-    public ImpUsersService(IUsersRepository userRepo){
+    public ImpUsersService(IUsersRepository userRepo,UsersMapper mapper){
         this.userRepo = userRepo;
+        this.mapper = mapper;
     }
 
     @Override
     public boolean addUsers(UsersDto usersDto) {
         if(Objects.isNull(usersDto)){
             throw new EmptyDataException("User Details are empty");
+        }else{
+            Users newUsers = mapper.converToUsers(usersDto);
+            userRepo.save(newUsers);
+            return true;
         }
-        return false;
+
     }
 
     @Override
     public UsersDto getUserByEmail(String email) {
 
-        Users users = userRepo.findByEmail(email);
-        return null;
+       return null;
     }
 
     @Override
