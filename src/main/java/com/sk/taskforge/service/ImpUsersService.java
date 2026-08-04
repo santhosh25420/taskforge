@@ -3,15 +3,19 @@ package com.sk.taskforge.service;
 import com.sk.taskforge.dto.UsersDto;
 import com.sk.taskforge.entity.Users;
 import com.sk.taskforge.exception.EmptyDataException;
+import com.sk.taskforge.exception.UserNotFoundException;
 import com.sk.taskforge.mapper.UsersMapper;
 import com.sk.taskforge.repos.IUsersRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 
 @Service
+@Slf4j
 public class ImpUsersService implements IUsersServices{
     private IUsersRepository userRepo;
     private UsersMapper mapper;
@@ -24,6 +28,7 @@ public class ImpUsersService implements IUsersServices{
     @Override
     public boolean addUsers(UsersDto usersDto) {
         if(Objects.isNull(usersDto)){
+            log.error("Empty input data received");
             throw new EmptyDataException("User Details are empty");
         }else{
             Users newUsers = mapper.converToUsers(usersDto);
@@ -35,17 +40,36 @@ public class ImpUsersService implements IUsersServices{
 
     @Override
     public UsersDto getUserByEmail(String email) {
+        Users  users = userRepo.findByEmail(email).orElseThrow(()->{
+            log.error("User not found with email: {}", email);
+            throw new UserNotFoundException("User not found with mail: "+email);
 
-       return null;
+        });
+        return mapper.convertToDto(users);
     }
 
     @Override
     public UsersDto getUserById(UUID id) {
-        return null;
+        Users users = userRepo.findById(id).orElseThrow(()->{
+            log.error("User not found with id: "+id);
+                throw new UserNotFoundException("User not found with id: "+id);
+        });
+        return mapper.convertToDto(users);
     }
 
     @Override
     public boolean deleteUserById(UUID id) {
-        return false;
+        userRepo.deleteById(id);
+        return true;
+    }
+
+    @Override
+    public List<UsersDto> getAll() {
+        List<Users> usersList = userRepo.findAll();
+        if(usersList.isEmpty()){
+            log.error("No users found");
+            throw new UserNotFoundException("Empty list of users");
+        }
+        return usersList.stream().map(users-> mapper.convertToDto(users)).toList();
     }
 }

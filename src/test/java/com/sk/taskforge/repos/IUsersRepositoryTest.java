@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -58,5 +60,69 @@ class IUsersRepositoryTest {
         entityManager.clear();
 
         assertThat(usersRepository.findById(savedUser.getId())).isEmpty();
+    }
+
+    @Test
+    public void findByEmailTest_01(){
+        Users users = Users.builder()
+                .name("Test1")
+                .email("test1@gmail.com")
+                .build();
+
+        Users savedUsers = usersRepository.saveAndFlush(users);
+        entityManager.clear();
+
+        Optional<Users> result = usersRepository.findByEmail(users.getEmail());
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isNotNull();
+        assertThat(result.get().getName()).isEqualTo(users.getName());
+        assertThat(result.get().getEmail()).isEqualTo(users.getEmail());
+        assertThat(result.get().getCreatedAt()).isNotNull();
+        assertThat(result.get().getUpdatedAt()).isNotNull();
+    }
+
+    @Test
+    public void findByEmailTest01_Exception(){
+        Users users = Users.builder()
+                .name("Test1")
+                .email("test1@gmail.com")
+                .build();
+        usersRepository.saveAndFlush(users);
+        entityManager.clear();
+        assertThat(usersRepository.findByEmail("random@gmail.com")).isEmpty();
+
+    }
+
+    @Test
+    public void findUserByIdTest_01(){
+        Users users = Users.builder()
+                .name("Test1")
+                .email("test1@gmail.com")
+                .build();
+        Users savedUser = usersRepository.saveAndFlush(users);
+        entityManager.clear();
+
+        Optional<Users> result = usersRepository.findById(savedUser.getId());
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isNotNull();
+        assertThat(result.get().getName()).isEqualTo(users.getName());
+        assertThat(result.get().getEmail()).isEqualTo(users.getEmail());
+        assertThat(result.get().getCreatedAt()).isNotNull();
+        assertThat(result.get().getUpdatedAt()).isNotNull();
+    }
+
+    @Test
+    public void findByIdTest02_Exception(){
+        Users users = Users.builder()
+                .name("Test1")
+                .email("test1@gmail.com")
+                .build();
+        usersRepository.saveAndFlush(users);
+        entityManager.clear();
+        assertThat(usersRepository.findById(UUID.fromString("99999999-9999-9999-9999-999999999999")))
+                .isEmpty();
+
     }
 }
