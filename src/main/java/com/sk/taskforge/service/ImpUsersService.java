@@ -94,4 +94,10 @@ public class ImpUsersService implements IUsersServices{
         Users savedUser = userRepo.save(user);
         return mapper.toResponse(savedUser);
     }
+
+    @Override
+    public Users getUsersEntityById(UUID id){
+        return userRepo.findById(id).orElseThrow(()->
+                new UserNotFoundException("User with id: "+id+" doesn't exists"));
+    }
 }
