@@ -1,6 +1,7 @@
 package com.sk.taskforge.mapper;
 
 import com.sk.taskforge.dto.UsersDto;
+import com.sk.taskforge.dto.UserResponse;
 import com.sk.taskforge.entity.Users;
 import com.sk.taskforge.exception.EmptyDataException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,5 +35,27 @@ public class UsersMapper {
                 .name(usersDto.getName())
                 .email(usersDto.getEmail())
                 .build();
+    }
+
+    public UserResponse toResponse(Users users) {
+        if (Objects.isNull(users)) {
+            throw new EmptyDataException("users cannot be null");
+        }
+        return new UserResponse(
+                users.getId(),
+                users.getName(),
+                users.getEmail(),
+                users.getCreatedAt(),
+                users.getUpdatedAt()
+        );
+    }
+
+    /** Updates only client-editable fields; persistence-managed fields stay intact. */
+    public void updateEntity(UsersDto source, Users target) {
+        if (Objects.isNull(source) || Objects.isNull(target)) {
+            throw new EmptyDataException("User details cannot be null");
+        }
+        target.setName(source.getName());
+        target.setEmail(source.getEmail());
     }
 }

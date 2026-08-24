@@ -1,6 +1,7 @@
 package com.sk.taskforge.controller;
 
 import com.sk.taskforge.dto.UsersDto;
+import com.sk.taskforge.dto.UserResponse;
 import com.sk.taskforge.service.IUsersServices;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -47,5 +48,12 @@ public class UsersController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id,
+                                                   @RequestBody @Valid UsersDto usersDto) {
+        UserResponse updatedUser = usersServices.updateUser(id, usersDto);
+        return ResponseEntity.ok(updatedUser);
     }
 }

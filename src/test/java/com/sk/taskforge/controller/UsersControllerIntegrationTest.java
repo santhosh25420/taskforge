@@ -2,6 +2,7 @@ package com.sk.taskforge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk.taskforge.dto.UsersDto;
+import com.sk.taskforge.dto.UserResponse;
 import com.sk.taskforge.exception.EmptyDataException;
 import com.sk.taskforge.service.IUsersServices;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,5 +72,21 @@ class UsersControllerIntegrationTest {
                 .andExpect(jsonPath("$.message").value("User Details are empty"))
                 .andExpect(jsonPath("$.path").value("/taskforge/users"))
                 .andExpect(jsonPath("$.details").isEmpty());
+    }
+
+    @Test
+    void updateUserShouldReturnTheUpdatedResource() throws Exception {
+        String id = "3f8b95f0-b9d3-4eb9-b5c8-2572148ec9f1";
+        UsersDto request = UsersDto.builder().name("Updated Name").email("updated@example.com").build();
+        when(usersServices.updateUser(eq(java.util.UUID.fromString(id)), any(UsersDto.class)))
+                .thenReturn(new UserResponse(java.util.UUID.fromString(id), request.getName(), request.getEmail(), null, null));
+
+        mockMvc.perform(put("/taskforge/users/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("Updated Name"))
+                .andExpect(jsonPath("$.email").value("updated@example.com"));
     }
 }

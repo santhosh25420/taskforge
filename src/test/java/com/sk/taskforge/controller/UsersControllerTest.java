@@ -1,6 +1,7 @@
 package com.sk.taskforge.controller;
 
 import com.sk.taskforge.dto.UsersDto;
+import com.sk.taskforge.dto.UserResponse;
 import com.sk.taskforge.exception.EmptyDataException;
 import com.sk.taskforge.exception.UserNotFoundException;
 import com.sk.taskforge.service.IUsersServices;
@@ -109,6 +110,20 @@ class UsersControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNull();
         verify(usersServices).getUserById(id);
+    }
+
+    @Test
+    void updateUserShouldReturnUpdatedResource() {
+        UUID id = UUID.randomUUID();
+        UsersDto request = UsersDto.builder().name("Updated Name").email("updated@example.com").build();
+        UserResponse updated = new UserResponse(id, request.getName(), request.getEmail(), null, null);
+        when(usersServices.updateUser(id, request)).thenReturn(updated);
+
+        ResponseEntity<UserResponse> response = usersController.updateUser(id, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(updated);
+        verify(usersServices).updateUser(id, request);
     }
     
 }

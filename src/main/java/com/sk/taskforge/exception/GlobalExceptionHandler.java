@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -47,8 +48,19 @@ public class GlobalExceptionHandler {
                                                                      UserNotFoundException ex){
             log.warn(ex.getMessage());
             ErrorResponse errorResponse = ErrorResponse.of(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.NOT_FOUND,
                     ex.getMessage(),
+                    request.getRequestURI()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        @ExceptionHandler({UserAlreadyExistsException.class, DataIntegrityViolationException.class})
+        public ResponseEntity<ErrorResponse> handleConflict(RuntimeException ex, HttpServletRequest request) {
+            log.warn("User update conflict: {}", ex.getMessage());
+            ErrorResponse errorResponse = ErrorResponse.of(
+                    HttpStatus.CONFLICT,
+                    ex instanceof UserAlreadyExistsException ? ex.getMessage() : "Email is already in use",
                     request.getRequestURI()
             );
             return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);

@@ -76,9 +76,9 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ErrorResponse> response = exceptionHandler.handleUserNotFoundException(request,exception);
        LocalDateTime afterHandling = LocalDateTime.now();
         assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().status()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.getBody().status()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getBody().path()).isEqualTo("/api/users");
         assertThat(response.getBody().details()).isEmpty();
         assertThat(response.getBody().timeStamp()).isBetween(beforeHandling,afterHandling);

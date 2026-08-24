@@ -1,13 +1,16 @@
 package com.sk.taskforge.service;
 
 import com.sk.taskforge.dto.UsersDto;
+import com.sk.taskforge.dto.UserResponse;
 import com.sk.taskforge.entity.Users;
 import com.sk.taskforge.exception.EmptyDataException;
 import com.sk.taskforge.exception.UserNotFoundException;
+import com.sk.taskforge.exception.UserAlreadyExistsException;
 import com.sk.taskforge.mapper.UsersMapper;
 import com.sk.taskforge.repos.IUsersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -71,5 +74,24 @@ public class ImpUsersService implements IUsersServices{
             throw new UserNotFoundException("Empty list of users");
         }
         return usersList.stream().map(users-> mapper.convertToDto(users)).toList();
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateUser(UUID id, UsersDto usersDto) {
+        if (Objects.isNull(usersDto)) {
+            throw new EmptyDataException("User details are empty");
+        }
+
+        Users user = userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
+        if (userRepo.existsByEmailAndIdNot(usersDto.getEmail(), id)) {
+            throw new UserAlreadyExistsException("A user already exists with email: " + usersDto.getEmail());
+        }
+
+        mapper.updateEntity(usersDto, user);
+        Users savedUser = userRepo.save(user);
+        return mapper.toResponse(savedUser);
     }
 }
