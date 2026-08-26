@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/organisation")
+@RequestMapping("/taskforge")
 public class OrganisationController {
 
     private IOrganisationService service;
@@ -21,7 +21,7 @@ public class OrganisationController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/organisation")
     public ResponseEntity<OrganisationResponseDto> newOrganisation(@RequestBody @Valid OrganisationRequestDto organisationRequest){
         OrganisationResponseDto responseDto = service.addOrganisation(organisationRequest);
         return ResponseEntity.status(HttpStatus.OK)

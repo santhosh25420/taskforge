@@ -66,6 +66,21 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().timeStamp()).isBetween(beforeHandling, afterHandling);
     }
 
+    @Test
+    void handleInvalidOrgNameExceptionShouldReturnBadRequestErrorResponse() {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/taskforge/organisation");
+        InvalidOrgNameException exception = new InvalidOrgNameException("Organisation with name : TaskForge already exists");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleInvalidOrgNameException(exception, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().status()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().message()).isEqualTo("Organisation with name : TaskForge already exists");
+        assertThat(response.getBody().path()).isEqualTo("/taskforge/organisation");
+        assertThat(response.getBody().details()).isEmpty();
+    }
+
    @Test
     public void handleUserNotFoundExceptionTest_01(){
         MockHttpServletRequest request = new MockHttpServletRequest("GET","/api/users");

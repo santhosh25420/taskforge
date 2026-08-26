@@ -25,7 +25,6 @@ import java.util.UUID;
 public class Users {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name", nullable = false)
@@ -41,5 +40,12 @@ public class Users {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void assignId() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+    }
 
 }

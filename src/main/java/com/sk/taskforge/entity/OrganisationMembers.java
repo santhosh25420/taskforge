@@ -9,7 +9,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "organisation_members")
+@Table(
+        name = "organisation_members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_organisation_member",
+                columnNames = {"organisation_id", "user_id"}
+        )
+)
 @Getter
 @Setter
 @Builder
@@ -18,15 +24,14 @@ import java.util.UUID;
 public class OrganisationMembers {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="organisation_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name ="organisation_id", nullable = false)
     private Organisation organisation;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
     @Column(name ="name", nullable = false)
@@ -42,6 +47,13 @@ public class OrganisationMembers {
     @UpdateTimestamp
     @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void assignId() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+    }
 
 
 }

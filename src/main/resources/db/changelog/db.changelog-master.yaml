@@ -39,5 +39,67 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql:
+              sql: |
+                DROP TABLE IF EXISTS organisation_members;
+
+  - changeSet:
+      id: 004-add-organisation-slug
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 004-add-organisation-slug.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql:
             sql: |
-              DROP TABLE IF EXISTS organisation_members;
+              ALTER TABLE organisations DROP CONSTRAINT IF EXISTS organisation_slug_unique;
+              ALTER TABLE organisations DROP COLUMN IF EXISTS slug;
+
+  - changeSet:
+      id: 005-remove-database-id-generation
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 005-remove-database-id-generation.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE users ALTER COLUMN id SET DEFAULT gen_random_uuid();
+              ALTER TABLE organisations ALTER COLUMN id SET DEFAULT gen_random_uuid();
+              ALTER TABLE projects ALTER COLUMN id SET DEFAULT gen_random_uuid();
+              ALTER TABLE organisation_members ALTER COLUMN id SET DEFAULT gen_random_uuid();
+
+  - changeSet:
+      id: 006-org-name-owner-unique-constraint
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 006-org-name-owner-unique-constraint.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql:  |
+              ALTER TABLE organisations DROP CONSTRAINT UK_organisation_name_owner_id UNIQUE(owner_id,name);
+
+  - changeSet:
+      id: 007-organisation-member-constraints
+      author: taskforge
+      changes:
+        - sqlFile:
+            path: 007-organisation-member-constraints.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE organisation_members DROP CONSTRAINT IF EXISTS uq_organisation_member;
+              ALTER TABLE organisation_members ALTER COLUMN name DROP NOT NULL;
+              ALTER TABLE organisation_members ALTER COLUMN role DROP NOT NULL;

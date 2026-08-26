@@ -34,7 +34,6 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-
         @ExceptionHandler(EmptyDataException.class)
         public ResponseEntity<ErrorResponse> handleInvalidUsersDto(EmptyDataException exception,
                                                               HttpServletRequest request){
@@ -65,4 +64,16 @@ public class GlobalExceptionHandler {
             );
             return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         }
+
+        @ExceptionHandler(InvalidOrgNameException.class)
+        public ResponseEntity<ErrorResponse> handleInvalidOrgNameException(InvalidOrgNameException ex, HttpServletRequest request) {
+            log.warn("Invalid organisation name: {}", ex.getMessage());
+            ErrorResponse errorResponse = ErrorResponse.of(
+                    HttpStatus.BAD_REQUEST,
+                    ex.getMessage(),
+                    request.getRequestURI()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
 }

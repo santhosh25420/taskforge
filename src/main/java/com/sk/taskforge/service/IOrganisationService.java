@@ -5,6 +5,6 @@ import com.sk.taskforge.dto.OrganisationResponseDto;
 
 public interface IOrganisationService {
 
-    public OrganisationResponseDto addOrganisation(OrganisationRequestDto organisationRequestDto);
+    OrganisationResponseDto addOrganisation(OrganisationRequestDto organisationRequestDto);
 
 }
