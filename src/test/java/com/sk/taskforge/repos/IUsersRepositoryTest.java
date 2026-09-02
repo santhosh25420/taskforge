@@ -1,11 +1,13 @@
 package com.sk.taskforge.repos;
 
+import com.sk.taskforge.configs.MyContainers;
 import com.sk.taskforge.entity.Users;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -13,11 +15,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@TestPropertySource(properties = {
-        "spring.liquibase.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect"
-})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ImportTestcontainers(MyContainers.class)
 class IUsersRepositoryTest {
 
     @Autowired
@@ -54,6 +53,7 @@ class IUsersRepositoryTest {
                 .build();
 
         Users savedUser = usersRepository.saveAndFlush(user);
+        entityManager.clear();
 
         usersRepository.deleteById(savedUser.getId());
         usersRepository.flush();
