@@ -6,6 +6,8 @@ This backlog converts the master plan into ordered delivery outcomes. It is inte
 
 No dates are committed here. Estimates and iteration forecasts are added after stories satisfy the definition of ready and delivery capacity is known.
 
+For a plain-language explanation, worked acceptance examples, and a reusable story card, use the [product scope and delivery guide](../product/product-scope-and-delivery-guide.md). The [home-lab delivery checklist](homelab-delivery-checklist.md) adds candidate quality targets and evidence forms for E-020/E-070/E-090/E-100; it does not mark those epics complete or approve deferred decisions.
+
 ## Backlog states
 
 | State | Meaning |

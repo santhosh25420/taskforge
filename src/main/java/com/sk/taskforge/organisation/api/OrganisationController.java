@@ -1,0 +1,30 @@
+package com.sk.taskforge.organisation.api;
+
+import com.sk.taskforge.organisation.application.IOrganisationService;
+import com.sk.taskforge.organisation.dto.OrganisationRequestDto;
+import com.sk.taskforge.organisation.dto.OrganisationResponseDto;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/taskforge")
+public class OrganisationController {
+
+    private IOrganisationService service;
+
+    public OrganisationController(IOrganisationService service){
+        this.service = service;
+    }
+
+    @PostMapping("/organisation")
+    public ResponseEntity<OrganisationResponseDto> newOrganisation(@RequestBody @Valid OrganisationRequestDto organisationRequest){
+        OrganisationResponseDto responseDto = service.addOrganisation(organisationRequest);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(responseDto);
+    }
+}
