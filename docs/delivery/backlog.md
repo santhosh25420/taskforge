@@ -1,64 +1,66 @@
 # TaskForge Delivery Backlog
 
+Status: accepted planning baseline, revised 2026-09-20. Product work remains Proposed until independently evidenced.
+
 ## Purpose
 
-This backlog converts the master plan into ordered delivery outcomes. It is intentionally epic-level during inception. Stories become implementation-ready only after the preceding product-flow and architecture decisions are complete.
+This is the epic-level product backlog for the complete private server, board, deployment/investigation and MCP journey. The [sprint roadmap](sprint-roadmap.md) contains 64 fourteen-day sprints, 128 stable TF story cards and their tasks. The [delivery guide](../product/product-scope-and-delivery-guide.md) explains how to use them.
 
-No dates are committed here. Estimates and iteration forecasts are added after stories satisfy the definition of ready and delivery capacity is known.
-
-For a plain-language explanation, worked acceptance examples, and a reusable story card, use the [product scope and delivery guide](../product/product-scope-and-delivery-guide.md). The [home-lab delivery checklist](homelab-delivery-checklist.md) adds candidate quality targets and evidence forms for E-020/E-070/E-090/E-100; it does not mark those epics complete or approve deferred decisions.
+Legacy E-xxx-Sxx identifiers remain epic slice references; TF-xxx IDs identify the current executable story cards. Epic numbers identify ownership, not chronological order. An epic can span or contribute to several sprints.
 
 ## Backlog states
 
 | State | Meaning |
 |---|---|
-| Proposed | Outcome is known but refinement is incomplete |
-| Ready | Acceptance, dependencies, design, and test approach are sufficient to begin |
-| In progress | Actively being delivered within the work-in-progress limit |
-| Review | Implementation is integrated and awaiting review/evidence |
-| Done | Acceptance criteria and the applicable phase gate pass |
-| Deferred | Explicitly outside the current release or awaiting a decision |
+| Proposed | Scoped outcome and forecast; readiness not yet established |
+| Ready | Decisions, dependencies, environment, test approach and capacity are sufficient to begin |
+| In progress | Active within the work-in-progress limit |
+| Review | Integrated work awaiting acceptance evidence |
+| Done | Applicable acceptance/gate passed and accepted |
+| Blocked | Specific missing prerequisite recorded with next action |
+| Deferred | Outside the committed horizon or awaiting a scope decision |
 
 ## Definition of ready
 
-A story may enter an iteration only when:
-
-- The user or operational outcome is stated.
-- Acceptance criteria are observable.
-- Dependencies and affected product rules are known.
-- Applicable UX, API, data, authorization, failure, and migration behaviour is specified.
-- The test approach and required environments are identified.
-- Material risks and unresolved decisions are linked.
-- The story is small enough to complete within one iteration or has been split vertically.
+- Persona, outcome, release scope and observable acceptance are stated.
+- Relevant UI/API/data/authorization/migration/failure rules are specified for this slice.
+- Dependencies and environmental facts are verified; PC disk/access and recovery prerequisites are known before host changes.
+- Test approach, demonstration and evidence location are clear.
+- Risks/decisions are linked and the work fits the sprint budget or is split vertically.
+- Forecast placement or a created document does not by itself make a story Ready.
 
 ## Definition of done
 
-A story is done only when:
-
-- Acceptance criteria pass in an integrated environment.
-- Applicable frontend, backend, persistence, authorization, failure, and observability behaviour is complete.
-- Unit, integration, contract, and browser tests required by the change pass.
-- Relevant documentation, decisions, and release notes are updated.
-- Continuous integration passes.
-- The behaviour is demonstrated and accepted.
+- Acceptance passes in the relevant integrated environment.
+- Applicable UI, API, persistence, identity, retry/failure, observability and operator behaviour is complete.
+- Required unit/PostgreSQL/contract/browser/operational/MCP tests and CI pass as applicable.
+- Contracts, diagrams, runbooks and release notes reflect the accepted behaviour.
+- Demo/evidence identify revision, environment, date, commands/results and remaining defects.
+- The reviewer/product owner accepts the outcome; no completion is inferred from elapsed time.
 
 ## Epic sequence
 
-| Order | Epic | Outcome | Dependency | Release |
-|---:|---|---|---|---|
-| 0 | E-000 Delivery inception | Approved product and delivery baseline | None | Release 1 |
-| 1 | E-010 Product flows and UX | Decision-complete user experience | E-000 | Release 1 |
-| 2 | E-020 Architecture and engineering specification | Decision-complete technical design | E-010 | Release 1 |
-| 3 | E-030 Delivery foundation and walking skeleton | Reproducible vertical delivery path | E-020 | Release 1 |
-| 4 | E-040 Organisations, invitations, and projects | Usable multi-tenant project setup | E-030 | Release 1 |
-| 5 | E-050 Issues and Kanban workflow | Core work-management experience | E-040 | Release 1 |
-| 6 | E-060 Collaboration, filters, and audit | Complete focused-board functionality | E-050 | Release 1 |
-| 7 | E-070 Private home-lab functional MVP | Accepted functionality and operational rehearsal | E-060 | Pre-release milestone |
-| 8 | E-080 Authentication and tenant security | Secure identity and authorization | E-070 | Release 1 |
-| 9 | E-090 Quality and operational hardening | Diagnosable and recoverable release candidate | E-080 | Release 1 |
-| 10 | E-100 UAT and home-lab release | Approved secure Release 1 | E-090 | Release 1 |
-| 11 | E-110 Stabilisation and operation | Stable operated product and evidence-based next backlog | E-100 | Release 1 support |
-| 12 | E-120 AWS deployment | Separately approved cloud deployment | E-110 and explicit approval | Later |
+| Epic | Forecast | Outcome | Dependencies |
+|---|---|---|---|
+| E-000 | Historical; revised now | Version-controlled product/delivery baseline | Product direction |
+| E-140 | S01–S08 | PC-to-server foundation | Actual PC assessment and preservation |
+| E-010, E-020 | S09; refinement per slice | Product flows and architecture decisions | E-000, inspected implementation/server evidence |
+| E-030 | S10–S12 | Repeatable browser/API/database/UAT path | E-010/E-020 decisions, E-140 |
+| E-040 | S13–S17 | Organisation, invitations and projects | E-030 |
+| E-050 | S18, S21–S22; assignment completed S23 | Issues and board workflow | E-040; relevant E-150/E-060 slices |
+| E-150 | S19–S20 | Hierarchy and 14-day sprint planning | Issue creation |
+| E-060 | S23–S25 | Collaboration, filtering and audit | Core work/board |
+| E-080 | S26–S27 | Cognito, roles and tenant security | Functional work contracts/current-actor boundary |
+| E-070 | S28 | Integrated authenticated private board acceptance | E-040/E-050/E-150/E-060/E-080 |
+| E-090 | S29–S31 | Quality and recovery evidence | Integrated board |
+| E-100 | S32 | Release 1 | E-090 and Release 1 gate |
+| E-110 | S33 and S57; ongoing | Stabilisation and operation | Preceding release |
+| E-160 | S33–S42 | Delivery evidence per work item | Release 1; stabilisation checkpoint |
+| E-170 | S43–S48 | Authorised logs, health and traces | Delivery context and registered sources |
+| E-180 | S49–S52 | Alerts, incidents and corrective work | Delivery/telemetry evidence |
+| E-190 | S53–S56 | Release 2 resilience and promotion | E-160/E-170/E-180 and R2 gate |
+| E-130 | S57–S64 | MCP v1 | Release 2; stabilisation checkpoint |
+| E-120 | Deferred | Separately approved AWS deployment | Post-MCP product/cost decision |
 
 ## E-000 — Delivery inception
 
@@ -86,7 +88,29 @@ The project has one version-controlled delivery baseline covering purpose, Relea
 
 ### Status
 
-Done. The six inception artifacts were created and cross-checked during the documentation-only tranche.
+Historical documentation tranche completed. This is not evidence that the new server/product implementation stories are accepted.
+
+## E-140 — PC-to-server foundation
+
+### Outcome
+
+The user's PC becomes a privately accessible Ubuntu Server LTS host with preserved data, repeatable administration, isolated containers, PostgreSQL, host monitoring and proven off-host recovery.
+
+### Slices and acceptance
+
+| Slice | Sprint | Acceptance |
+|---|---|---|
+| E-140-S01 | S01 | H-01 inventory, capacity, preservation and sample restoration |
+| E-140-S02 | S02 | H-02 supported installation, patching, non-root SSH and recovery access |
+| E-140-S03 | S03 | H-03 private LAN/VPN, firewall and naming/HTTPS prerequisites |
+| E-140-S04 | S04 | H-04 persistent storage/time and safe reboot |
+| E-140-S05 | S05 | H-05 Compose, environment isolation and network boundaries |
+| E-140-S06 | S06 | H-06 database persistence, off-host backup and clean restore |
+| E-140-S07 | S07 | H-07 private host/backup monitoring with finite retention |
+| E-140-S08 | S08 | H-08 current-backend deployment/recovery rehearsal |
+
+The [server plan](server-build-plan.md) owns the gates. Hardware and destinations are unknown until assessed; no PC data erasure, purchasing or public exposure is implied. State: Proposed; no host checks executed.
+
 
 ## E-010 — Product flows and UX
 
@@ -107,11 +131,11 @@ Users and implementers can follow each critical journey, including alternate and
 
 ### Acceptance criteria
 
-- J-01 through J-10 have happy, alternate, denial, validation, and system-failure paths where applicable.
+- J-01 through J-13 have happy, alternate, denial, validation, and system-failure paths where applicable.
 - Wireframes identify required data and actions without defining unapproved backend behaviour.
 - Kanban status change does not require drag-and-drop as its only interaction.
 - Loading, empty, permission, validation, stale-write, expired-invitation, and retry states are explicit.
-- UX choices do not add a capability listed as out of scope.
+- UX choices follow the release-specific scope. Hierarchy and sprint planning are included in Release 1; investigation flows are refined before their Release 2 slices.
 
 ## E-020 — Architecture and engineering specification
 
@@ -138,7 +162,7 @@ The implementation team has agreed module, API, data, identity, security, enviro
 - Identity can change from local development to Cognito without rewriting domain services.
 - Threat controls exist for tenant access, invitation secrets, authentication, unsafe logs, and deployment exposure.
 - Quality targets are measurable and have named evidence.
-- Material decisions are recorded as accepted ADRs before foundation implementation begins.
+- Decisions affecting the next slice are recorded before it starts; later integration/telemetry/MCP decisions are refined in their allocated sprints, not assumed accepted by this document.
 
 ## E-030 — Delivery foundation and walking skeleton
 
@@ -220,6 +244,22 @@ Organisation members can create, inspect, assign, prioritise, and move issues th
 - Stale writes cannot silently overwrite newer data.
 - Failed board moves return the interface to persisted truth and provide a useful outcome.
 
+## E-150 — Work hierarchy and sprint planning
+
+### Outcome
+
+Members organise epics, stories, child tasks and standalone bugs, then plan and close project-level 14-day sprints without losing work/history.
+
+### Slices
+
+- E-150-S01: Same-project epic/story/task relationships, standalone bugs, type-aware board/detail views and progress.
+- E-150-S02: Planned/active/closed 14-day sprints; stories/bugs assigned directly, tasks inherit; explicit carryover.
+
+### Acceptance criteria
+
+R1-F12/R1-F13 and J-12/J-13 pass. Invalid parent/type/project/cycle and concurrent sprint-close cases preserve state. Work completion, deployment outcome and health remain separate. Forecast S19–S20, TF-037–TF-040; State: Proposed.
+
+
 ## E-060 — Collaboration, filters, and audit
 
 ### Outcome
@@ -245,28 +285,6 @@ The focused board supports the collaboration and traceability needed for Release
 - Successful audited actions produce accurate entries; rejected actions do not.
 - Board and audit loading is bounded and deterministic.
 
-## E-070 — Private home-lab functional MVP
-
-### Outcome
-
-All focused functionality and basic operational procedures are demonstrated in a private integrated environment.
-
-### Initial slices
-
-- E-070-S01: Deterministic non-sensitive UAT/demo fixtures.
-- E-070-S02: Full functional regression on home-lab UAT.
-- E-070-S03: Deployment smoke test and running-version evidence.
-- E-070-S04: Container restart and application rollback rehearsal.
-- E-070-S05: Database backup and clean restore rehearsal.
-- E-070-S06: Known-limitations and functional-MVP acceptance record.
-
-### Acceptance criteria
-
-- Release 1 functional journeys pass with the development identity adapter.
-- The environment is reachable only through the approved private boundary.
-- Backup restoration and application rollback are demonstrated with recorded results.
-- The milestone is labelled private, unauthenticated, and non-production.
-
 ## E-080 — Authentication and tenant security
 
 ### Outcome
@@ -286,11 +304,33 @@ Release environments use Cognito identity and enforce role and tenant permission
 
 ### Acceptance criteria
 
-- R1-F01 and J-10 pass.
+- R1-F01 and J-10 pass, including hierarchy, sprint and nested-resource authorization.
 - No release operation accepts development identity.
 - Every organisation-owned resource has positive role tests and negative tenant tests.
 - Frontend control visibility and backend authorization agree, while backend checks remain authoritative.
 - Security review has no unresolved critical/high defect.
+
+## E-070 — Integrated private board acceptance
+
+### Outcome
+
+The complete board, hierarchy and sprint planning are demonstrated on private UAT after identity and tenant checks, before Release 1 hardening and promotion.
+
+### Initial slices
+
+- E-070-S01: Deterministic non-sensitive UAT/demo fixtures.
+- E-070-S02: Full functional regression on home-lab UAT.
+- E-070-S03: Deployment smoke test and running-version evidence.
+- E-070-S04: Reference S08 restart/rollback evidence at S28; repeat against the full candidate in S31 with E-090.
+- E-070-S05: Reference S06/S08 clean restore evidence at S28; restore full product fixtures in S31 with E-090.
+- E-070-S06: Known limitations and integrated private board acceptance record.
+
+### Acceptance criteria
+
+- J-01–J-13 pass on authenticated UAT after E-080; development identity is not accepted as release evidence.
+- The environment is reachable only through the approved private boundary.
+- Server-level backup/rollback evidence is linked; full candidate recovery remains an explicit S31 prerequisite for Release 1.
+- The milestone is labelled private UAT and not yet an accepted release; hierarchy/carryover and role/tenant evidence are recorded.
 
 ## E-090 — Quality and operational hardening
 
@@ -358,7 +398,112 @@ Release 1 is observed, supported, and improved through evidence rather than spec
 
 - Operational ownership and maintenance tasks are explicit.
 - Release defects are within the product owner's accepted threshold.
-- The next milestone is justified by product or operational evidence.
+- Release defects and backup/recovery health are reviewed at S33 and S57 before the next planned feature slice proceeds. The accepted roadmap selects Release 2 then MCP; stabilisation may reforecast it.
+
+## E-160 — Deployment evidence and work traceability
+
+### Outcome
+
+A member follows work through explicit PR links, builds, immutable artifact contents and observed deployments for each service/environment.
+
+### Slices
+
+- E-160-S01: Organisation-owned GitHub repository connection and private credential references (S33).
+- E-160-S02: Service/environment catalogue (S34).
+- E-160-S03: Explicit many-to-many PR/work links and provenance (S35).
+- E-160-S04: Outbound GitHub/Actions synchronisation, build attempts and freshness (S36).
+- E-160-S05: Immutable artifact identity and included-work manifest (S37).
+- E-160-S06: Restricted producer credentials and durable idempotent deployment receipts (S38).
+- E-160-S07: History and confirmed current version (S39).
+- E-160-S08: Per-target work delivery timeline and incomplete attribution (S40).
+- E-160-S09: Failed/partial deployment and external rollback representation (S41).
+- E-160-S10: Duplicate/delayed/missing/out-of-order reconciliation (S42).
+
+### Acceptance criteria
+
+R2-F01–R2-F10 pass. Builds do not establish deployments; partial targets do not establish complete delivery; receipts survive TaskForge outages and converge under replay. No TaskForge UI/MCP deployment execution is introduced. State: Proposed.
+
+
+## E-170 — Authorised operational investigation
+
+### Outcome
+
+A member inspects bounded application logs, measured health and trace links for an authorised deployment with explicit uncertainty/freshness.
+
+### Slices
+
+- E-170-S01: Trusted source/service/environment/version/time correlation (S43).
+- E-170-S02: Private Loki collection, access boundaries, redaction and retention (S44).
+- E-170-S03: Bounded backend log-query contract (S45).
+- E-170-S04: In-app log viewer and authorised Grafana links (S46).
+- E-170-S05: Prometheus health summaries and missing/no-traffic/stale states (S47).
+- E-170-S06: Tempo correlation and trace links (S48).
+
+### Acceptance criteria
+
+R2-F11–R2-F14 pass. Query/source/tenant overrides are denied; shared/unpartitioned host/control-plane logs remain operator-only. No raw telemetry is stored in PostgreSQL, and no-traffic/stale data is not labelled healthy. State: Proposed.
+
+
+## E-180 — Alerts, incidents and corrective work
+
+### Outcome
+
+Responders use verified alerts and evidence to record an incident, resolve it and link corrective work.
+
+### Slices
+
+- E-180-S01: Authenticated incoming alert mapping, lifecycle and deduplication (S49).
+- E-180-S02: Audited incident create/acknowledge/resolve flow (S50).
+- E-180-S03: Evidence/deployment links and corrective stories/tasks/bugs (S51).
+- E-180-S04: Controlled complete failure-investigation/recovery journey (S52).
+
+### Acceptance criteria
+
+R2-F15/R2-F16 and R2-J05 pass; S52 integrates R2-J01–R2-J06. Association is not automatically cause; foreign or untrusted references are rejected/quarantined. Incoming alerts do not add outbound paging/email to scope. State: Proposed.
+
+
+## E-190 — Release 2 resilience and promotion
+
+### Outcome
+
+The delivery/investigation product is bounded, secure, recoverable and accepted on exact artifacts.
+
+### Slices
+
+- E-190-S01: Connector outage, queue backpressure, expiry and reconciliation (S53).
+- E-190-S02: Complete operational-data access and secret-redaction matrix (S54).
+- E-190-S03: Capacity, retention and full restore/replay rehearsal (S55).
+- E-190-S04: Release 2 UAT, go/no-go, artifact promotion and smoke (S56).
+
+### Acceptance criteria
+
+R2-F17 and the Release 2 gate pass, retaining Release 1 regression. Historical raw telemetry lost to retention remains explicitly unavailable after restore. State: Proposed.
+
+
+## E-130 — Controlled MCP v1 integration
+
+### Outcome
+
+A supported authenticated private-network MCP client uses the released work/delivery/investigation application services through eleven tools: ten reads and one idempotent create.
+
+### Slices
+
+- E-130-S01: Contract, threat model, stable protocol/SDK and client decision (S57).
+- E-130-S02: Authenticated Streamable HTTP, discovery, feature isolation and diagnostics (S58).
+- E-130-S03: Four work-management read tools (S59).
+- E-130-S07: Work-delivery and deployment reads (S60).
+- E-130-S08: Bounded health and log reads (S61).
+- E-130-S09: Incident list/detail reads (S62).
+- E-130-S04: Idempotent issue-creation tool (S63).
+- E-130-S05: Supported-client journey, safe logs and misuse tests (S58–S64).
+- E-130-S06: MCP candidate, external-client acceptance, disable/rollback/recovery and go/no-go (S64).
+
+### Acceptance criteria
+
+All M-F01–M-F11 and M-J01–M-J04 in the [MCP contract](../product/mcp-v1-scope.md) pass. Tools reuse product services and per-call identity/tenancy/source authorization. Only issue creation mutates; no deploy/rollback/incident mutation or arbitrary query exists. The five historical work tools retain names; six operational read tools extend them.
+
+State: Proposed after Release 2 and S57 stabilisation. This replaces the historical five-tool-only, S14–S18 allocation.
+
 
 ## E-120 — Separately approved AWS deployment
 
@@ -385,23 +530,10 @@ TaskForge demonstrates cloud portability without creating unapproved cost or reb
 
 ### Status
 
-Deferred until after Release 1 stabilisation and explicit authorization.
+Deferred beyond the through-MCP forecast, subject to explicit cloud architecture/cost/provisioning approval.
 
 ## Deferred product backlog
 
-The following remain ideas, not commitments:
+Attachments, watchers, due dates, outbound notifications/paging, custom workflows, private-project roles, advanced/full-text/semantic search, additional Git providers, Redis/Kafka/Kubernetes/microservices, AI generation, TaskForge-executed deploy/rollback, arbitrary query tools, full embedded dashboard/trace exploration, AWS hosting, public ingress and personal home-lab services are not commitments through MCP v1.
 
-- Attachments.
-- Watchers.
-- Due dates.
-- Outbound notifications.
-- Configurable workflows.
-- Private projects or project-level roles.
-- Advanced/full-text/semantic search.
-- Redis.
-- Kafka or another broker.
-- Kubernetes.
-- Microservices.
-- AI or MCP features.
-
-An item moves out of this list only through the scope-change rule in the Release 1 scope document.
+A new item requires a product outcome, acceptance, dependencies, risks and explicit forecast/scope trade-off. Keep all release contracts and the decision log consistent.

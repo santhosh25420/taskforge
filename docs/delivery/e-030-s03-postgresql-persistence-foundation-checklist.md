@@ -8,11 +8,14 @@ This document is a delivery checklist only. Creating it does not modify applicat
 
 ## Current evidence
 
-- `mvn test -q` currently passes.
-- `src/test/java/com/sk/taskforge/repos/IUsersRepositoryTest.java` uses H2, disables Liquibase, and creates the schema with Hibernate `create-drop`.
-- The current green repository test therefore does not prove that the committed Liquibase migrations work on PostgreSQL.
-- Testcontainers is not yet configured.
-- The Docker daemon was unavailable during preparation; start Docker before running the PostgreSQL container tests.
+Inspected on 2026-09-20; tests were not executed during this documentation revision.
+
+- Maven declares PostgreSQL Testcontainers dependencies.
+- `src/test/java/com/sk/taskforge/configs/MyContainers.java` configures a PostgreSQL 13 container and a Spring service connection.
+- `src/test/java/com/sk/taskforge/user/persistence/IUsersRepositoryTest.java` imports that container and disables replacement with an embedded database.
+- The earlier H2/no-Testcontainers description was historical and is superseded. Configured tests still require an actual recorded run to establish migration/constraint coverage.
+- Review the PostgreSQL image and supported toolchain during S10. Docker availability, clean-install/upgrade behaviour and complete organisation constraints remain to be verified.
+- This checklist supplies evidence work for E-030-S03, now allocated within S10 (TF-019/TF-020).
 
 ## Scope
 
@@ -45,16 +48,16 @@ This document is a delivery checklist only. Creating it does not modify applicat
 
 ### 2. Establish the PostgreSQL test path
 
-- [ ] Add the Testcontainers PostgreSQL and JUnit integration dependencies with versions managed by the Spring Boot dependency BOM where possible.
-- [ ] Configure a reusable PostgreSQL container for persistence integration tests.
-- [ ] Register container JDBC URL, username, and password through test-time dynamic properties.
+- [ ] Verify the existing Testcontainers PostgreSQL and JUnit dependencies and their managed versions.
+- [ ] Verify the existing reusable PostgreSQL container and select a supported image.
+- [ ] Verify the existing Spring service connection supplies the test datasource; do not add a competing datasource registration path.
 - [ ] Prevent Spring Boot from replacing the container datasource with an embedded database.
 - [ ] Keep the test database disposable and isolated per test run.
-- [ ] Remove the H2 dependency once no test relies on it for persistence.
+- [ ] Confirm no H2 dependency or embedded-database replacement is introduced; none is declared in the inspected Maven file.
 
 ### 3. Exercise the real schema
 
-- [ ] Stop disabling Liquibase in repository integration tests.
+- [ ] Verify repository integration tests actually run Liquibase rather than assuming configuration proves execution.
 - [ ] Run the complete `db.changelog-master.yaml` against a fresh PostgreSQL container.
 - [ ] Keep `spring.jpa.hibernate.ddl-auto=validate` for the integration path.
 - [ ] Keep the PostgreSQL dialect for the integration path.
@@ -124,6 +127,6 @@ Once this checklist is complete, continue with the remaining E-030 delivery-foun
 
 ## Traceability
 
-- Master plan: `docs/delivery/master-plan.md`, Phase 3.
+- Master plan: `docs/delivery/master-plan.md`, application walking slice, S09–S12.
 - Backlog: `docs/delivery/backlog.md`, E-030-S03.
 - Risk register: `docs/delivery/risk-register.md`, especially R-007.

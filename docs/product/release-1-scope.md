@@ -4,18 +4,20 @@
 
 This document is the product contract for TaskForge Release 1. It defines included capabilities, business rules, user journeys, acceptance criteria, and explicit exclusions.
 
-Detailed API schemas, database structures, and screen designs are intentionally deferred to the product-flow and architecture tranches. Those specifications must implement this contract without silently expanding it.
+The accepted scope was expanded on 2026-09-19 to include work hierarchy and 14-day project sprints. Detailed API schemas, database structures, and screen designs are implementation tasks in the product-flow and architecture slices. Those specifications must implement this contract without silently expanding it.
 
 ## Release definition
 
-TaskForge has two distinct milestones:
+This contract covers the work-management release, forecast at S32. The broader product continues through [Release 2](release-2-scope.md) at S56 and [MCP v1](mcp-v1-scope.md) at S64. These later capabilities do not weaken this release gate.
+
+Release 1 has two acceptance stages:
 
 | Milestone | Meaning |
 |---|---|
-| Private functional MVP | Complete focused-board functionality on a trusted local/home-lab network using a development identity mechanism |
-| Release 1 | The functional MVP plus Cognito authentication, tenant authorization, quality hardening, UAT, recovery evidence, and secure home-lab promotion |
+| Integrated private board acceptance (S28) | Complete board, hierarchy and sprint journeys on UAT after Cognito and tenant checks |
+| Release 1 (S32) | The accepted board plus complete quality, candidate recovery evidence and secure home-lab promotion |
 
-The private functional MVP is not a production release and must not be exposed publicly.
+Earlier functional slices may use development identity only in private environments. S28 UAT already requires Cognito; it is not release acceptance. All environments in this roadmap remain accessible through LAN/private VPN.
 
 ## Personas and permissions
 
@@ -35,7 +37,7 @@ The detailed permission matrix will be finalized during architecture design. It 
 
 - Cognito provides Release 1 authentication.
 - TaskForge maintains the application profile associated with the external identity.
-- The private functional MVP uses a development identity adapter that cannot be enabled accidentally in release configuration.
+- Earlier private development slices may use a development identity adapter that cannot be enabled accidentally in release configuration.
 - Release 1 supports sign-in, sign-out, token expiry, and authentication-failure handling required by the selected Cognito flow.
 
 Acceptance criteria:
@@ -209,6 +211,40 @@ Acceptance criteria:
 - A backup can be restored into a clean database and verified.
 - Application and database failure procedures are executable from committed runbooks.
 
+## Work hierarchy and sprint planning
+
+### R1-F12 — Epics, stories, tasks and bugs
+
+- An epic groups stories within one project; a story may exist in the backlog without an epic.
+- A task belongs to exactly one story in the same project. A bug is standalone.
+- Parent references cannot cross projects/organisations or form cycles; moving/archive behaviour preserves history and prevents orphaned children.
+- Stories, tasks and bugs use the fixed workflow. Epic progress is a roll-up of its stories, not a separate deployment or automatic acceptance signal.
+- The default board shows stories and bugs; child tasks are available in story detail and an explicitly selected task view. Counts always identify their work type.
+- Child completion does not silently complete a story. Work acceptance remains an explicit transition.
+
+Acceptance criteria:
+
+- A member creates an epic, a story and child tasks, then navigates their relationships after reload.
+- Invalid parent/type/project combinations and cycles fail without mutation.
+- Parent progress does not double-count both a story and its tasks.
+- A standalone bug can be planned and completed without an invented parent.
+
+### R1-F13 — Project sprints
+
+- A sprint belongs to one project and spans 14 calendar days: inclusive end date is start date plus 13 days.
+- Sprint states are planned, active and closed, with at most one active sprint per project.
+- Owner/admin creates, starts and closes sprints; members assign or remove eligible work from planned/active sprints.
+- Stories and bugs are assigned directly; tasks inherit the story's sprint and cannot select a conflicting sprint; epics span sprints.
+- Closing a sprint captures completed/unfinished work and requires an explicit choice to return unfinished work to the backlog or carry it to a named planned sprint.
+- Closed-sprint history is retained. Changing sprint assignment never marks an item done or deployed.
+
+Acceptance criteria:
+
+- The browser supports create/plan/start/close and explicit carryover for a 14-day sprint.
+- Wrong project, a second active sprint, invalid dates and contradictory task assignment are rejected.
+- A stale close or concurrent reassignment cannot silently lose planned work.
+- Original sprint history survives carryover, and child tasks follow the resulting story assignment.
+
 ## Critical user journeys
 
 | ID | Journey | Successful outcome |
@@ -224,6 +260,8 @@ Acceptance criteria:
 | J-09 | Handle concurrent edit | Stale edit is rejected and the user can refresh/reapply intentionally |
 | J-10 | Prevent tenant access | User cannot access another organisation's resources by guessed identifier |
 | J-11 | Operate release | Operator deploys, smoke-tests, rolls back, backs up, and restores |
+| J-12 | Organise work | Member navigates a valid epic/story/task hierarchy and standalone bugs |
+| J-13 | Plan a sprint | Team plans, starts and closes 14-day sprints with explicit carryover and preserved history |
 
 Detailed happy paths, alternate paths, and wireframes will be produced in the product-flow tranche.
 
@@ -241,6 +279,9 @@ Detailed happy paths, alternate paths, and wireframes will be produced in the pr
 | BR-08 | Concurrent mutations must not silently lose a committed update. |
 | BR-09 | Archive operations preserve history and remove records from normal active workflows. |
 | BR-10 | Times are stored and exchanged consistently; display localisation is a client concern. |
+| BR-11 | Parent/child work belongs to one project; tasks inherit the story sprint; hierarchy cannot cycle. |
+| BR-12 | Work completion is independent of deployment outcome and runtime health. |
+| BR-13 | Closing a sprint preserves history and explicitly resolves unfinished work. |
 
 ## Release 1 quality attributes
 
@@ -256,6 +297,8 @@ The architecture tranche will assign measurable targets and evidence to each att
 - Operability: version identification, structured diagnostics, smoke tests, runbooks, and monitored resource limits.
 
 ## Explicitly out of scope
+
+The exclusions below apply to Release 1 only. Deployment tracking and investigation belong to Release 2; MCP follows Release 2. Both are defined in their own contracts and the [product sprint roadmap](../delivery/sprint-roadmap.md).
 
 | ID | Capability |
 |---|---|
@@ -273,12 +316,13 @@ The architecture tranche will assign measurable targets and evidence to each att
 | OOS-12 | AI or MCP features |
 | OOS-13 | AWS hosting |
 | OOS-14 | High-availability claims for the home lab |
+| OOS-15 | Customer-facing PR/build/deployment tracking, log investigation, alerts and incidents (Release 2) |
 
 ## Release acceptance gate
 
 Release 1 is approved only when:
 
-- J-01 through J-11 pass in their applicable automated or UAT suites.
+- J-01 through J-13 pass in their applicable automated or UAT suites.
 - Owner, admin, member, invited-user, unauthorised-user, and cross-tenant scenarios pass.
 - The development identity mechanism is unavailable in release configuration.
 - Critical browser, API, migration, security, rollback, and recovery evidence passes.
@@ -296,4 +340,3 @@ Any addition to Release 1 must identify:
 3. Dependencies and risks.
 4. What existing scope is removed, how the forecast changes, or what additional risk is explicitly accepted.
 5. Required updates to the backlog, risk register, and decision log.
-

@@ -1,5 +1,7 @@
 # TaskForge: concepts to build and ship
 
+> Reference checklist, refreshed 2026-09-20. The [64-sprint product roadmap](delivery/sprint-roadmap.md) controls delivery. Learn concepts when their product/server story needs them; checkboxes below are not current release acceptance evidence. Release 1 includes hierarchy and sprints; Release 2 includes deployment/log/health/incident features; MCP follows Release 2.
+
 This is a learning checklist for implementing TaskForge locally and shipping its secure Release 1. Learn each topic far enough to implement it, explain the choice, and demonstrate the result in TaskForge. You do not need to finish every topic before starting to code.
 
 ## Tags and scope
@@ -12,16 +14,16 @@ This is a learning checklist for implementing TaskForge locally and shipping its
 
 Every topic and checklist subtopic has a tag. Sections 1–18 cover Release 1. Section 19 is conditional later learning, not a prerequisite for Release 1.
 
-The governing scope is an **Angular/TypeScript frontend, Spring Boot modular monolith, PostgreSQL, Cognito authentication, and Ubuntu/Debian home-lab deployment**. Cognito is required for secure Release 1 even though AWS application hosting is deferred.
+The governing scope is an **Angular/TypeScript frontend, Spring Boot modular monolith, PostgreSQL, Cognito authentication, and private Ubuntu Server LTS deployment**, followed by delivery/investigation and MCP. Cognito is required for secure Release 1 even though AWS application hosting is deferred.
 
-The existing Maven project declares Java 17 and Spring Boot 3.4.5 and uses Liquibase. The broader learning README mentions Java 21; the decision log leaves final supported toolchain selection to foundation work. Treat version selection as an explicit decision, not an assumption that every roadmap version is already implemented or supported.
+The existing Maven project declares Java 17 and Spring Boot 3.4.5 and uses Liquibase. Older study maps mention Java 21; the decision log leaves supported toolchain selection to foundation work. Treat version selection as an explicit decision, not an assumption that every roadmap version is already implemented or supported.
 
 ## 1. Product scope and delivery basics — `build` `deploy`
 
 Start with the [plain-language guide and TaskForge examples](product/product-scope-and-delivery-guide.md), then use the [home-lab targets and release gates](delivery/homelab-delivery-checklist.md). These implement the planning part of this topic; learning and execution checks remain open until demonstrated.
 
 - [ ] `build` **Requirements and acceptance criteria:** personas, user stories, happy paths, failure paths, and observable outcomes; turn “create an organisation” into a testable journey.
-- [ ] `build` **Release 1 domain:** organisations, memberships, invitations, projects, issues, labels, comments, and audit history; understand how these relate.
+- [ ] `build` **Release 1 domain:** organisations, memberships, invitations, projects, epics/stories/tasks/bugs, sprints, labels, comments and audit history; understand how these relate.
 - [ ] `build` **Scope boundaries:** organisation-wide project visibility, fixed workflow, archival, and no outbound invitation email; avoid implementing features from the broader roadmap by accident.
 - [ ] `build` **Incremental delivery:** vertical slices, small tasks, dependencies, definition of ready, and definition of done; finish UI-to-database journeys.
 - [ ] `build` `deploy` **Quality targets:** define expected data volume, concurrent users, latency, accessibility, and recovery needs before choosing infrastructure or claiming performance.
@@ -203,18 +205,18 @@ Start with the [plain-language guide and TaskForge examples](product/product-sco
 
 Use the sections above as a reference while completing these milestones. Check a learning item only when you can explain it and show evidence in code, tests, configuration, or a rehearsal.
 
-| Order | Tags | Learn first | Evidence that you can move on |
+| Roadmap span | Tags | Learn for this work | Evidence that you can move on |
 | --- | --- | --- | --- |
-| 1 | `build` | Scope, tooling, Java, domain design | Explain the Release 1 model and build the existing backend reproducibly. |
-| 2 | `build` | HTTP, Spring, SQL, JPA, Liquibase, backend tests | Implement a validated organisation/project slice with real PostgreSQL tests. |
-| 3 | `build` | TypeScript, Angular, forms, routing, API integration | Complete the organisation-to-project journey through the browser. |
-| 4 | `build` | Invitations, issues, workflow, transactions, concurrency, audit | Demonstrate the complete private functional MVP, including failure recovery and negative tests. |
-| 5 | `build` `deploy` | Containers, Linux, networking, configuration, basic recovery | Run the private MVP on home-lab UAT and demonstrate restart, rollback, and restore. |
-| 6 | `build` `deploy` | Cognito, Spring Security, roles, tenant isolation | Replace development identity and pass authentication, permission, and cross-tenant tests. |
-| 7 | `deploy` | CI/CD, TLS, secrets, observability, operational hardening | Produce versioned release artifacts and complete deployment/recovery rehearsals. |
-| 8 | `deploy` | UAT, release approval, handover, stabilization | Promote the UAT-approved artifacts into the secure home-lab release and verify operation. |
+| S01–S08 | `deploy` | PC preservation, Linux, storage, networking, Compose, backups and host monitoring | Pass H-01–H-08 on the actual PC. |
+| S09–S12 | `build` `deploy` | Scope, Java/Spring/PostgreSQL, migrations, Angular shell and CI | Deploy a repeatable walking slice to UAT. |
+| S13–S25 | `build` | Organisations, invitations, hierarchy, sprints, board, concurrency and collaboration | Demonstrate integrated functional paths and their failure cases. |
+| S26–S28 | `build` `deploy` | Cognito, Spring Security, roles and tenant isolation | Pass authenticated J-01–J-13 on private UAT. |
+| S29–S32 | `build` `deploy` | Accessibility, diagnostics, performance and recovery | Promote the exact accepted Release 1 artifacts. |
+| S33–S42 | `build` `deploy` | Provider adapters, manifests, deployment receipts and reconciliation | Trace work to observed per-target deployment evidence. |
+| S43–S56 | `build` `deploy` | Telemetry access, logs/metrics/traces, incidents, capacity and recovery | Pass the Release 2 investigation journeys and gate. |
+| S57–S64 | `build` `deploy` | MCP schemas, protocol/auth, client integration and safe tools | Pass all eleven tool contracts and MCP recovery/client evidence. |
 
-Do not postpone tenant-aware modeling, safe invitation design, or testability until milestone 6. The real identity provider can follow the private MVP; the application boundaries must support it from the start.
+Tenant-aware modeling, safe invitations and testability apply from the first functional slice. Real identity precedes S28 integrated board acceptance. Use the story roadmap for dependencies; this table is a learning companion.
 
 ## 19. Conditional later topics — `build` `deploy`
 
@@ -228,7 +230,7 @@ These topics belong to the broader TaskForge learning roadmap. **They are not re
 - [ ] `build` `deploy` **Attachments:** upload validation, object storage, access controls, size limits, malware-handling decisions, retention, and backup implications. Trigger: file attachments enter scope.
 - [ ] `build` `deploy` **Microservices and distributed systems:** service boundaries, network failures, timeouts, consistency, distributed tracing, and independent releases. Trigger: evidence that a module needs independent deployment or scaling.
 - [ ] `deploy` **Kubernetes and high availability:** orchestration, scheduling, service discovery, probes, resource limits, secrets, redundancy, and recovery across failure domains. Trigger: operational requirements justify the added platform complexity.
-- [ ] `build` `deploy` **AI/MCP integrations:** tool contracts, model limits, retrieval, tenant-safe access, prompt-injection defenses, evaluations, provider credentials, and cost monitoring. Trigger: a concrete approved product use case.
+- [ ] `build` `deploy` **AI extensions beyond MCP v1:** model limits, retrieval, evaluations, provider credentials and cost monitoring. Trigger: a later approved product use case. The accepted eleven-tool MCP integration is scheduled at S57–S64 in the current roadmap.
 
 ## Repository sources
 
@@ -239,3 +241,15 @@ The accepted delivery documents control this checklist's Release 1 scope. Broade
 - [Architecture and product decision log](architecture/decision-log.md)
 - [Delivery backlog](delivery/backlog.md)
 - [Current Maven configuration](../pom.xml)
+
+## Required concepts for the expanded product
+
+- [ ] E-140 / S01–S08: PC inventory/data preservation, Ubuntu administration, storage, LAN/VPN, private TLS, Compose, off-host backup and host recovery.
+- [ ] E-150 / S19–S20: typed work hierarchy, cycle/project constraints, inherited sprint assignment, explicit carryover and type-aware progress.
+- [ ] E-160 / S33–S42: GitHub conditional polling, provider limits, PR/build/artifact provenance, immutable manifests, producer identity, receipt idempotency/order and replay.
+- [ ] E-170 / S43–S48: trusted telemetry correlation, source/tenant authorization, Loki/Prometheus/Tempo, redaction, bounded queries/retention and freshness.
+- [ ] E-180 / S49–S52: alert deduplication, incident lifecycle, evidence association versus cause, corrective-work links.
+- [ ] E-190 / S53–S56: connector outage/backpressure, multi-source recovery, capacity and acceptance evidence.
+- [ ] E-130 / S57–S64: MCP transport/auth/client compatibility, eleven scoped tool contracts, untrusted log content and idempotent issue creation.
+
+The older optional/deferred technology notes are study references. MCP's eleven-tool scope and operational investigation are committed milestones in the current roadmap; AI generation and additional tools remain deferred.

@@ -1,3 +1,7 @@
+# Historical Class Design Reference
+
+This diagram preserves earlier modelling work. Current product boundaries and planned modules are defined in the [system overview](architecture/system-overview.md); application classes and this reference must be reviewed during the affected implementation slices.
+
 ```mermaid
 
 classDiagram

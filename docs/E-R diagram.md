@@ -1,3 +1,7 @@
+# Historical ER Design Reference
+
+This diagram preserves earlier modelling work. It is not the complete schema for the expanded product. Reconcile it with the [system overview](architecture/system-overview.md) and release contracts before implementing hierarchy, sprints, deployment evidence or incidents. The PDF export is also a historical reference.
+
 ```mermaid
 erDiagram
     
@@ -105,4 +109,3 @@ erDiagram
  }
 
 ```
-

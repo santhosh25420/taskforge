@@ -1,153 +1,104 @@
-# TaskForge home-lab delivery checklist
+# TaskForge Home-Lab Delivery Checklist
 
-Tags: `build` `deploy`
+Status: planning only; host checks, application acceptance, deployments and recovery rehearsals have not been run for this revision. Use with the [server build plan](server-build-plan.md), [release contracts](../product/product-charter.md#release-strategy) and [roadmap](sprint-roadmap.md).
 
-## Purpose and status
+## Environment record
 
-This applies [product scope and delivery basics](../product/product-scope-and-delivery-guide.md) to the home lab. It defines the operational outcome, candidate quality targets, release checks, and a place to record evidence.
+| Item | Record |
+|---|---|
+| PC hardware, disks, existing OS/data | Unknown; assess/preserve in S01 |
+| Target | Supported Ubuntu Server LTS selected at installation |
+| Access | LAN/private VPN; private HTTPS; no public ingress |
+| CPU/RAM/storage budgets | Pending inventory and measured workload |
+| Hostnames/IPs/VPN/backup destination | Pending actual environment discovery |
+| UAT/release storage and credentials | Separate; concrete identifiers assigned during server setup |
+| Deployment authority | Operator-controlled external scripts |
+| Operational owner | Project owner |
+| Physical failure domain | One PC; no high-availability claim |
 
-**Status: planning artifact created; no home-lab connection, deployment, acceptance run, or recovery rehearsal was performed as part of creating this document.** Hardware and access details are unverified. All execution gates below start as not run.
+## Gate H — server readiness, S08
 
-The [master plan](master-plan.md), [Release 1 scope](../product/release-1-scope.md), and [decision log](../architecture/decision-log.md) govern the release. The numerical targets below are proposed inputs to E-020-S09/D-108; topology details belong to E-020-S08/D-107. They do not silently mark deferred decisions accepted.
+- [ ] H-01–H-08 in the server plan pass with host-specific evidence.
+- [ ] Existing files are preserved and required backup copies were restored successfully.
+- [ ] Private administration, storage mounts, clock, containers and database survive reboot.
+- [ ] PostgreSQL and Docker management are not exposed through public or unapproved interfaces.
+- [ ] Host/disk/backup monitoring is private and visibly detects an agreed failure.
+- [ ] Current backend starts from a known revision with local credentials/TLS replaced appropriately.
+- [ ] Backend restart, compatible artifact rollback and clean database restoration are demonstrated.
 
-## 1. The operational promise — `deploy`
+## Gate L — every application slice
 
-As the operator, I want to run TaskForge on my home server so intended users can use the tested application and I can investigate failures and recover their work.
+- [ ] Story has a defined outcome, scope reference, actor/tenant rules and failure scenarios.
+- [ ] Applicable UI/API/database/integration path runs in its specified environment.
+- [ ] Migrations and constraints pass against PostgreSQL; no persistence confidence is inferred from mocks.
+- [ ] Required automated tests and a reproducible demo pass.
+- [ ] Failure, stale/conflict, permission and retry states are visible where applicable.
+- [ ] Evidence records revision, environment, commands/results and remaining defects.
 
-Home-lab delivery includes the frontend, backend, PostgreSQL, private access/TLS design, separate environment configuration/data, version identification, diagnostics, backups, and recovery procedures. A server that merely starts the application has demonstrated startup, not release readiness.
+## Gate R1 — complete board, S32
 
-AWS application hosting and high availability are outside this milestone. Cognito remains the secure release identity provider. Keeping a secure release private is valid; passing its release gate does not itself authorize public exposure.
+- [ ] J-01–J-13 pass, including work hierarchy and 14-day sprint close/carryover.
+- [ ] Cognito/role/tenant checks pass; development identity is unavailable in release.
+- [ ] Browser, API, concurrency, migration, accessibility and supported-browser checks pass.
+- [ ] Application logs are safe; health/version and operational signals are usable.
+- [ ] Off-host backups, isolated restore and compatible rollback are rehearsed for the candidate.
+- [ ] No unresolved critical/high security defect; known limitations and go/no-go recorded.
+- [ ] Exact UAT-approved artifacts promoted and running-version smoke test recorded.
 
-## 2. Environment record — `deploy`
+## Gate R2 — delivery and investigation, S56
 
-Record operational metadata only. Keep passwords, private keys, and tokens in the chosen secret store, not this document.
+- [ ] R2-J01–R2-J06 pass: PR/build/artifact attribution, per-target deployment state and recovery.
+- [ ] Failed builds/rollouts, partial mappings and rollback history cannot falsely mark work deployed.
+- [ ] Receipt replay, duplicates, conflicting IDs, out-of-order events and reconciliation pass.
+- [ ] Logs/health/traces are bounded and authorised; shared host/control-plane data remains operator-only.
+- [ ] Empty, no traffic, stale, expired-retention and unavailable telemetry are distinguishable.
+- [ ] Incoming alerts/incident lifecycle, evidence links and corrective work pass.
+- [ ] Secret expiry, GitHub limits, source outage, storage limits and queue backpressure are tested.
+- [ ] Restored metadata reconciles with retained external telemetry and queued receipts.
+- [ ] R1 regression, exact-artifact promotion and recovery evidence pass.
 
-| Item | Current record | Why it matters |
-| --- | --- | --- |
-| Physical host / VM | Unknown | Determines resource limits and failure domain. |
-| Operating system | Ubuntu/Debian is the accepted target; actual installation unverified | Deployment commands and service management depend on it. |
-| CPU / RAM / free storage | Unknown | Required before validating capacity targets. |
-| Existing workloads | Unknown | TaskForge must share the server without exhausting it. |
-| Intended access | Unknown; planning assumes trusted private access initially | Determines routing, TLS, and firewall design. |
-| UAT/release hostnames and addresses | Not selected | Needed for proxy configuration and Cognito redirects. |
-| Runtime / image registry | Not verified or selected in this checklist | Needed for reproducible artifact delivery. |
-| UAT/release database and storage names | Not selected; must be separate | Prevents acceptance tests from altering release data. |
-| Backup destination outside the host | Not selected | Required to recover from loss of the server. |
-| Operator | Project owner, unless another operator is assigned | Someone must respond to failures and maintain backups. |
+## Gate M — MCP v1, S64
 
-### Environments in plain language
+- [ ] M-J01–M-J04 and all eleven tool contracts pass with a supported private-network client.
+- [ ] Read-only tools cannot mutate; create retries are idempotent and auditable.
+- [ ] Cross-tenant/scope and raw-query bypass attempts fail without leaking operational data.
+- [ ] Returned log content is treated as untrusted data; no tokens/raw logs enter tool audit records.
+- [ ] MCP-on/off smoke checks and rollback/restore preserve web and operator workflows.
+- [ ] Versioned tool/client compatibility, limitations and go/no-go are recorded.
 
-| Environment | Purpose | Identity and data boundary |
-| --- | --- | --- |
-| Local | Implement and test quickly on your workstation | Disposable test data; explicit development identity allowed. |
-| Home-lab UAT | Rehearse real user journeys and operation | Separate configuration/data; private development identity only during private MVP, then real identity for release-candidate UAT. |
-| Home-lab release | Run the accepted version for intended users | Cognito, tenant authorization, TLS/access controls, release data, and tested recovery. |
+## Candidate measurement targets
 
-UAT and release can share one machine but must not share writable application data or credentials. If that machine fails, both may fail. A diagram or separate container names do not create independent hardware.
+These remain proposals until hardware/workload validation records accepted values. They are not measured results or uptime promises.
 
-## 3. Candidate quality targets — `build` `deploy`
+| ID | Candidate | Evidence |
+|---|---|---|
+| Q-01 | 2 organisations, 5 projects each, 1,000 active work items/project, 5 concurrent users | Seed/load scenario with work-type and tenant distribution |
+| Q-02 | Board/filter API p95 ≤ 1 second, unexpected errors < 1% for a 10-minute warmed run | Hardware, artifact, query mix, latency distribution and error record |
+| Q-03 | No duplicate keys, lost accepted edits, duplicate membership or receipt effects | PostgreSQL concurrency/retry tests |
+| Q-04 | Protected operations reject missing/invalid identity and cross-tenant access | Positive/negative API/browser/MCP matrices |
+| Q-05 | Keyboard critical flows at 390px and 1366px viewports | Browser/manual accessibility evidence |
+| Q-06 | Application-data RPO ≤ 24 hours | Latest verified off-host recoverable backup time |
+| Q-07 | Restore ≤ 2 hours on available compatible hardware | Timed restore, identity/work/delivery/incident checks; hardware replacement excluded |
+| Q-08 | Compatible application rollback ≤ 15 minutes | Timed rollback with migration-compatibility record |
+| Q-09 | Sustained service/backup failure visible within 5 minutes; disk warning at 80% | Controlled failure detection and acknowledgement |
+| Q-10 | 7 daily and 4 weekly off-host database restore points | Storage sizing, retained-copy verification and restore |
+| Q-11 | Finite log/metric/trace retention and bounded queries/queues | Recorded per-source limits, exhaustion/truncation and source-outage tests |
 
-These are concrete starting proposals for a small portfolio workload, not claims about your server. Measure them in UAT and record accepted values before treating them as release commitments. Revise unrealistic targets explicitly rather than claiming they passed.
+Quality values are refined in the allocated story before it becomes ready. A failed capacity check changes limits/topology or the forecast explicitly; it does not manufacture a passing gate.
 
-| ID | Tags | Candidate target or existing requirement | How to prove it |
-| --- | --- | --- | --- |
-| Q-01 | `build` `deploy` | Proposed test dataset: 2 organisations, 5 projects per organisation, 1,000 active issues per project, and 5 concurrently active users | Save a reproducible seed/load scenario with tenant-separated data. |
-| Q-02 | `build` `deploy` | Proposed performance: board/filter API p95 ≤ 1 second, unexpected request failures < 1%, for a 10-minute run after warm-up at Q-01 workload | Record request mix, page size, host specs, test version, latency distribution, and failures; exclude intentional denial tests from this error metric. |
-| Q-03 | `build` | Required integrity: no duplicate issue keys, lost accepted edits, or duplicate membership in defined concurrency/retry cases | Real PostgreSQL concurrency and transaction tests with recorded outcomes. |
-| Q-04 | `build` `deploy` | Required security: all protected release operations reject missing/invalid identity and cross-tenant access; no unresolved critical/high security defects | API/browser permission tests, configuration review, and recorded security findings. |
-| Q-05 | `build` | Required usability: core journeys work by keyboard, status change has a non-drag action, and failures are explained | Manual keyboard checks and browser tests; candidate viewport widths 390 px and 1366 px. |
-| Q-06 | `deploy` | Proposed recovery point objective: lose at most 24 hours of data | Automated daily backups with an off-host completed copy; record the latest recoverable point and alert if its age exceeds the target. |
-| Q-07 | `deploy` | Proposed recovery time objective: ≤ 2 hours from recovery start to verified service on available compatible hardware | Timed clean restore plus identity, organisation, issue, and audit checks; record that obtaining replacement hardware is outside this measured interval. |
-| Q-08 | `deploy` | Proposed application rollback: ≤ 15 minutes to a known-good compatible artifact | Timed UAT rollback and smoke test; document incompatible schema cases separately. |
-| Q-09 | `deploy` | Proposed failure visibility: sustained application failure is visible within 5 minutes; disk alert at 80% usage | Trigger controlled UAT failures and capture health/monitoring evidence. |
-| Q-10 | `deploy` | Proposed backup retention: 7 daily and 4 weekly restore points outside the host | Verify completed copies, restore a retained copy, and measure storage required before accepting this policy. |
+## Evidence record
 
-Here, p95 means at least 95% of measured requests meet the stated time. Recovery point means how much recent work you might lose; recovery time means how long restoration takes. These targets do not create an uptime or high-availability promise.
-
-Target decision record: **Pending host/workload validation.** When resolved, record accepted values, operator/product-owner decision, date, and evidence in the existing architecture decision process.
-
-## 4. Gate L: a local slice works — `build`
-
-Apply this gate to each selected vertical slice, then repeat the integrated functional journeys when the MVP is complete.
-
-- [ ] Prerequisites, selected tool versions, and startup/test instructions are recorded.
-- [ ] The selected user journey works through Angular, Spring Boot, and PostgreSQL.
-- [ ] Valid input, invalid input, relevant permission rules, and persistence after reload pass.
-- [ ] Applicable rollback/concurrency/failure behavior has test evidence.
-- [ ] Migrations run against a clean test database and mappings validate.
-- [ ] The slice's automated checks pass; remaining work is recorded honestly.
-- [ ] Development identity is explicitly restricted to the local/private environment design.
-
-Exit evidence: story reference + tested commit + exact commands/results + a reproducible user demonstration. This gate alone does not establish that all Release 1 functionality is complete.
-
-## 5. Gate H: private functional MVP on the home lab — `deploy`
-
-Traceability: E-070, R1-F11/J-11, with all functional journeys from E-040 through E-060.
-
-- [ ] Environment record is complete enough to deploy and recover; host capacity and available storage are measured.
-- [ ] Selected container/runtime, network, TLS/private access, and secret-handling design is recorded.
-- [ ] Access is verified within the trusted private boundary; an MVP using development identity has no public ingress.
-- [ ] UAT has separate configuration, credentials, and persistent storage from release.
-- [ ] Versioned frontend/backend artifacts are deployed and their running versions can be identified.
-- [ ] Organisation, both invitation paths, project, issue, board, collaboration, filtering, and conflict journeys pass using non-sensitive demonstration data.
-- [ ] Browser refresh on a deep link works; database data survives application/container restart.
-- [ ] Health status and useful logs can be inspected without exposing secrets.
-- [ ] A controlled restart/reboot rehearsal demonstrates service recovery.
-- [ ] A backup outside the live volume/host is restored into a clean, isolated database and its records are checked.
-- [ ] A previous compatible application version is restored and smoke-tested.
-- [ ] Known limitations are recorded and the environment is identified as a private functional MVP.
-
-### Worked operational acceptance example
-
-**Given** UAT contains a known organisation, issue, comment, and audit entry, **when** the operator backs it up and restores the backup into a separate clean database, **then** the restored application can show those records with their relationships intact, and the elapsed recovery time and recovered data timestamp are recorded.
-
-Perform the rehearsal against isolated restore storage. A successful backup command alone does not satisfy this acceptance check.
-
-## 6. Gate R: secure home-lab Release 1 — `deploy`
-
-Traceability: E-080, E-090, E-100 and the existing Release 1 acceptance gate.
-
-- [ ] All private functional MVP gate evidence is available and still applicable.
-- [ ] Cognito sign-in, expiry, logout, invalid-token, and authentication-failure cases pass.
-- [ ] Development identity cannot be enabled accidentally in release configuration.
-- [ ] Owner/admin/member and cross-organisation tests pass for every protected resource.
-- [ ] TLS, allowed origins/redirects, restricted service reachability, and secrets configuration pass review.
-- [ ] Candidate quality targets have been resolved into recorded accepted targets, and required measurements pass.
-- [ ] Required browser, API, database, migration, accessibility, and security checks pass.
-- [ ] No unresolved critical or high-severity security defect remains.
-- [ ] Backup schedule, off-host copies, failure visibility, retention, and clean restore are demonstrated.
-- [ ] Migration sequence and application rollback compatibility are documented and rehearsed.
-- [ ] User guide, API documentation, release notes, deployment, troubleshooting, rollback, and restore procedures are usable.
-- [ ] Persona-based UAT passes against the exact release-candidate artifacts.
-- [ ] The product owner records go/no-go with evidence and known limitations.
-- [ ] The same approved artifact versions are promoted without rebuilding, and release smoke checks pass.
-
-Public access, if later desired, requires its own concrete access design and review under the existing exposure rule. Home-lab Release 1 need not be internet-facing.
-
-## 7. Evidence record — `build` `deploy`
-
-Start each gate as **Not run**. Use **Pass** only when the required evidence exists; use **Fail** for an executed check that did not meet its expectation. A planned command or a document is not execution evidence.
-
-| Gate | Current result | Tested version/environment | Evidence | Remaining action |
-| --- | --- | --- | --- | --- |
-| L — local slice | Not run in this task | Not recorded | None recorded here | Select/refine a story and run its checks. |
-| H — private home-lab MVP | Not run | Host unverified | None | Confirm environment and execute after the functional MVP is ready. |
-| R — secure home-lab release | Not run | Not deployed in this task | None | Complete identity, quality, recovery, UAT, and promotion gates. |
-
-Copy this entry for an actual check:
-
-```markdown
-Check ID / story:
+~~~text
+Gate / story / test:
+State: Not run | Pass | Fail | Blocked
 Date and operator:
-Environment and host specification:
-Commit / frontend image digest / backend image digest:
-Migration version and non-secret configuration reference:
-Test data and starting conditions:
-Exact command or manual procedure:
-Expected result:
-Actual result and evidence location:
-Result: Not run / Pass / Fail
-Defect or follow-up:
-```
+Commit / image digest / migration version:
+Environment and hardware:
+Command or procedure:
+Expected / observed:
+Evidence location:
+Remaining defects / accepted limitations:
+Next action:
+~~~
 
-Release decision record: **Not requested or made in this task.** At release time, attach the evidence, remaining limitations, recovery plan, and product-owner decision before promotion.
+All gates currently remain **Not run**. Checklist creation does not approve public exposure, PC disk changes, purchases or cloud provisioning.

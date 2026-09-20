@@ -1,164 +1,91 @@
 # TaskForge Product Charter
 
-## Document status
-
-This charter is the approved product baseline for discovery and Release 1 planning. It describes why TaskForge exists and what outcome it must produce. Detailed feature behaviour belongs in [`release-1-scope.md`](release-1-scope.md).
+Status: accepted planning baseline, revised 2026-09-19. Product implementation and release acceptance remain unverified.
 
 ## Product statement
 
-TaskForge is a portfolio-grade work-management product for small software teams that need a clear, shared view of project issues without the administration and breadth of a large enterprise platform.
+TaskForge helps small software teams plan work, trace its delivery into running applications, and investigate operational behaviour. Its central journey is:
 
-It provides a Kanban-first workflow in which a team can organise projects, invite members, assign work, collaborate on issues, and understand how important issue data changed over time.
+**Epic → story/task → pull request → build → deployed version → health and logs → incident and corrective work.**
 
-## Problem
+A team can answer what was planned, which changes shipped where, whether the application is healthy, and which evidence supports an investigation. Association with a failing deployment is not an automatic claim that a particular story caused the failure.
 
-Small software teams need a dependable way to answer:
-
-- What work exists?
-- What state is each item in?
-- Who is responsible for it?
-- What is most important?
-- What discussion and decisions are attached to it?
-- What changed, when, and by whom?
-
-The first release is not intended to compete feature-for-feature with mature work-management suites. It is intended to solve this focused workflow coherently, securely, and operably.
-
-## Primary audience
-
-### Primary users
-
-- Small software-team owners and leads.
-- Developers and other team members managing project issues.
-
-### Release 1 personas
+## Audience and responsibilities
 
 | Persona | Need |
 |---|---|
-| Organisation owner | Establish the workspace, control membership, and retain final administrative authority |
-| Organisation admin | Manage invitations, members, projects, and issue activity without transferring ownership |
-| Organisation member | See organisation projects and create, update, assign, label, comment on, and move issues |
-| Invited user | Discover or open an invitation, join the intended organisation, and understand invitation failures |
-| Operator | Deploy, inspect, back up, restore, roll back, and troubleshoot the application |
+| Organisation owner/admin | Manage membership, projects and authorised integration connections |
+| Developer/member | Plan work, collaborate, follow delivery and inspect permitted operational evidence |
+| Team lead | Organise epics and 14-day sprints, review progress and follow corrective work |
+| Invited user | Join the correct organisation with predictable identity checks |
+| Application responder | A member investigating an authorised service and maintaining its incident record |
+| Host operator | Build, patch, deploy, monitor, back up and recover the private server |
 
-## Product goals
+Product roles remain OWNER, ADMIN and MEMBER. Team lead and responder are personas, not additional permission roles. Host operation is a separate responsibility and does not grant ordinary members access to shared host or TaskForge administration logs.
 
-| ID | Goal |
-|---|---|
-| G-01 | Deliver a useful Kanban workflow for small software teams. |
-| G-02 | Enforce clear organisation tenancy and role boundaries before secure Release 1. |
-| G-03 | Make the full system reproducible locally and operable on an Ubuntu/Debian home lab. |
-| G-04 | Demonstrate professional delivery evidence: requirements, decisions, tests, security, observability, rollback, and recovery. |
-| G-05 | Keep the architecture simple enough to evolve from measured needs. |
+## Goals and success measures
 
-## Non-goals
-
-| ID | Non-goal |
-|---|---|
-| NG-01 | Reproduce Jira or another mature product feature-for-feature. |
-| NG-02 | Support microservices, Kubernetes, Redis, or Kafka in Release 1. |
-| NG-03 | Deliver advanced search, semantic search, AI, or MCP capabilities in Release 1. |
-| NG-04 | Deliver attachments, watchers, due dates, or outbound notifications in Release 1. |
-| NG-05 | Claim high availability from one home-lab server. |
-| NG-06 | Make AWS hosting part of the initial release commitment. |
-| NG-07 | Expose an unauthenticated functional MVP to the public internet. |
-
-## Stakeholders
-
-| Stakeholder | Interest | Decision authority |
+| ID | Goal | Observable acceptance |
 |---|---|---|
-| Product owner | Product usefulness, scope, priorities, acceptance | Scope, priority, release go/no-go |
-| Delivery/technical lead | Feasible sequencing, architecture, risks, quality | Technical recommendations and phase readiness |
-| End-user representatives | Usability and workflow fit | Feedback and UAT evidence |
-| Operator | Deployment, support, recovery, maintenance | Operational readiness recommendation |
-| Portfolio reviewer | Clarity of engineering decisions and evidence | No delivery authority; represents an evaluation audience |
+| G-01 | Deliver useful collaborative work planning | Owner creates a project; members plan a story and tasks, complete its workflow, and review comments/history. |
+| G-02 | Enforce organisation and role boundaries | Positive and cross-tenant negative cases pass for work, delivery, telemetry and MCP. |
+| G-03 | Build and operate the PC server | Private access, reboot recovery, off-host backup and clean restoration are demonstrated. |
+| G-04 | Produce repeatable engineering evidence | CI, UAT, immutable artifacts, release decisions and recovery results identify the tested revision/environment. |
+| G-05 | Keep the architecture maintainable | Domain logic stays in the modular monolith; integrations use explicit boundaries and measured capacity. |
+| G-06 | Make delivery traceable per work item | A story links to a PR, build, immutable artifact and confirmed deployment per service/environment, including failures and rollbacks. |
+| G-07 | Support evidence-based investigation | An authorised user follows a deployment into bounded logs, health, traces and an incident without inventing missing or causal evidence. |
+| G-08 | Expose the product through MCP | A supported client reads work/delivery/operational evidence and creates one issue safely through existing application services. |
 
-Stakeholder feedback must be recorded honestly. Portfolio work must not fabricate interviews, adoption, or satisfaction data.
+Retain success-measure IDs SM-01–SM-05 for board journeys, invalid/concurrent operation handling and tenant checks; SM-06–SM-10 for reproducible build, CI, artifact promotion, recovery and security. Their executable criteria are in the [Release 1 contract](release-1-scope.md). New measures SM-11 (delivery attribution), SM-12 (authorised investigation), SM-13 (PC recovery) and SM-14 (MCP journey) are satisfied by R2-J01–R2-J06, H-01–H-08 and M-J01–M-J04 in their linked contracts. No user adoption or performance result is claimed without evidence.
+
+## Release strategy
+
+| Milestone | Product commitment | Forecast |
+|---|---|---|
+| Server foundation | PC ready for private application operation | S08 |
+| Release 1 | Complete board, hierarchy, sprints, collaboration, Cognito and secure home-lab operation | S32 |
+| Release 2 | Deployment tracking, in-app logs, health, trace links, alerts and incidents | S56 |
+| MCP v1 | Controlled client access to the released work and investigation capabilities | S64 |
+
+The complete board is delivered before customer-facing deployment tracking. Basic host/app monitoring exists earlier to operate TaskForge itself. These are separate uses of observability.
 
 ## Constraints
 
 | ID | Constraint |
 |---|---|
-| C-01 | Existing application code remains unchanged during the documentation-only inception tranche. |
-| C-02 | The initial implementation remains a Spring Boot modular monolith backed by PostgreSQL. |
-| C-03 | The web client uses Angular and TypeScript with a Kanban-first experience. |
-| C-04 | The first operational target is an Ubuntu/Debian home-lab server. |
-| C-05 | Authentication is deferred for the private functional MVP but is mandatory before secure Release 1. |
-| C-06 | AWS work requires separate approval and is not allowed to create unapproved spending. |
-| C-07 | Work is planned and reviewed in two-week iterations. |
+| C-01 | This planning revision changes documentation only. Later execution tasks declare their implementation boundary. |
+| C-02 | Spring Boot modular monolith, PostgreSQL and Liquibase remain the application foundation. |
+| C-03 | Angular/TypeScript provides the board and investigation UI. |
+| C-04 | Ubuntu Server LTS on the user's PC is the initial server target; access is LAN/private VPN. |
+| C-05 | Development identity is restricted to private development/MVP use; Cognito and tenant authorization are mandatory at Release 1. |
+| C-06 | AWS application hosting is deferred; Cognito remains included. No hardware purchase or cloud spending is implied by planning. |
+| C-07 | All sprints last 14 calendar days; initial capacity is 8–10 hours/sprint, with 6–8 hours planned delivery. |
+| C-08 | MCP follows Release 2; every tool uses the product's application services and authorization. |
+| C-09 | Deployments and rollbacks execute outside TaskForge, even when TaskForge is unavailable. |
+| C-10 | Raw logs, metrics and traces remain in observability backends; application metadata remains in PostgreSQL. |
 
 ## Assumptions
 
-| ID | Assumption | Validation point |
+| ID | Assumption | Validation |
 |---|---|---|
-| A-01 | All organisation members may access all organisation projects in Release 1. | Product-flow review |
-| A-02 | A fixed workflow is sufficient for the first target users. | UX review and UAT |
-| A-03 | Both in-app and manually shared invitations are valuable without outbound email. | Invitation flow review |
-| A-04 | Existing development data does not require preservation. | Architecture/data-design tranche |
-| A-05 | The home lab can run the required application, database, proxy, and operational tooling. | Foundation capacity check |
-| A-06 | One person may hold multiple delivery roles, with explicit self-review gates where independent review is unavailable. | Each iteration review |
+| A-01 | All organisation members can use all organisation projects | Role/tenant acceptance; integration access can still be more restrictive |
+| A-02 | Fixed statuses and a simple epic/story/task hierarchy satisfy initial planning | S09 journeys and S28 acceptance |
+| A-03 | In-app and manually shared invitations are sufficient without outbound email | S15–S16 |
+| A-04 | Earlier exploratory application data was disposable | Recheck before any future schema replacement; does not apply to PC disks or server data |
+| A-05 | PC resources can support the selected stack with bounded retention | S01 assessment, S08 readiness, S55 measurements |
+| A-06 | One contributor fills product, engineering and operator responsibilities | Separate evidence/self-review checkpoints each sprint |
+| A-07 | GitHub/Actions is the first integration provider | S33 connector setup; outbound internet required |
+| A-08 | Existing PC data must be preserved until assessed and backed up | S01; no blanket disk-erasure approval |
+| A-09 | A backup destination outside the host can be made available | S01 feasibility; unresolved destination blocks server recovery acceptance |
 
-If an assumption is disproved, update this charter, the risk register, affected decisions, and backlog before implementation continues.
+## Non-goals through MCP v1
 
-## Success measures
+Preserve NG-01 (full Jira parity), NG-02 (mandatory Redis/Kafka/microservices/Kubernetes), NG-03 (semantic search/AI generation), NG-04 (attachments/watchers/due dates/outbound notifications), NG-05 (single-host HA claims), NG-06 (AWS application hosting) and NG-07 (public unauthenticated access) as exclusions through this horizon.
 
-### Product acceptance measures
+Also excluded: TaskForge-controlled deployment execution, arbitrary SQL/LogQL/PromQL tools, embedded full trace exploration, automated root-cause claims, additional Git providers and personal media/photo/file-sync services. Incoming operational alerts are included in Release 2 and are distinct from outbound notifications.
 
-| ID | Measure |
-|---|---|
-| SM-01 | An owner can create an organisation, invite a member by either supported mechanism, and create a project. |
-| SM-02 | A member can create and manage an issue through the complete fixed workflow from the Angular interface. |
-| SM-03 | Users can assign, prioritise, label, comment on, filter, and review the history of issues. |
-| SM-04 | Invalid transitions, stale updates, invalid invitations, and unauthorised access fail predictably. |
-| SM-05 | Owner, admin, member, and cross-organisation access rules pass automated and UAT scenarios. |
+## Governance
 
-### Engineering and operational measures
+The product owner accepts scope and release results; the delivery lead maintains capacity and dependencies; engineering owns contracts; the operator owns recovery; security/QA review evidence. One person may fill these roles, but writing a checklist does not satisfy it.
 
-| ID | Measure |
-|---|---|
-| SM-06 | A clean environment can build, test, and run TaskForge from committed instructions. |
-| SM-07 | Continuous integration blocks compilation, test, contract, lint, or agreed security-gate failures. |
-| SM-08 | The same immutable release artifacts pass UAT and are promoted to the home-lab release environment. |
-| SM-09 | An operator can detect a failure, inspect relevant evidence, roll back the application, and restore the database from documented procedures. |
-| SM-10 | Release 1 has no unresolved critical or high-severity security defect. |
-
-Numerical performance, recovery, accessibility, browser-support, and capacity targets will be made decision-complete during the architecture and engineering specification phase rather than guessed during inception.
-
-## Product boundaries
-
-### Release 1 includes
-
-- Invite-based organisations and roles.
-- Organisation-wide projects.
-- Fixed issue workflow and Kanban board.
-- Priorities, assignees, labels, comments, filtering, optimistic concurrency, and audit history.
-- Private functional MVP followed by authenticated, authorised home-lab Release 1.
-- Operational evidence for build, deployment, monitoring, backup, restore, and rollback.
-
-### Later opportunities
-
-- Outbound notifications and asynchronous processing.
-- Search and measured performance improvements.
-- Attachments, due dates, watchers, and richer project controls.
-- AWS deployment.
-- Other advanced capabilities justified by actual product or operational evidence.
-
-## Release strategy
-
-1. Build and accept the focused functionality in private environments.
-2. Prove deployment, rollback, backup, and restore on the home lab.
-3. Add Cognito authentication and enforce tenant authorization.
-4. Complete security, quality, accessibility, performance, and operational hardening.
-5. Run UAT and promote the exact approved artifacts to secure home-lab Release 1.
-6. Stabilise before selecting enhancements or AWS deployment.
-
-## Charter review triggers
-
-Review this charter when:
-
-- The primary audience changes.
-- Release 1 gains or loses a major capability.
-- Project visibility or tenancy changes.
-- Authentication timing or deployment target changes.
-- A critical assumption is disproved.
-- A phase exit gate reveals that the desired outcome is no longer feasible within accepted constraints.
-
+Review scope when audience, integration provider, access model, capacity or required capabilities change. Record trade-offs in the [decision log](../architecture/decision-log.md), [risk register](../delivery/risk-register.md) and [sprint roadmap](../delivery/sprint-roadmap.md) together. Calendar dates remain unset until Sprint 1 starts.

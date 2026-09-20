@@ -1,5 +1,7 @@
 # Normalisation Report
 
+Historical analysis of the early schema. It does not cover the planned work hierarchy, sprints, delivery metadata or incidents; use the [system overview](architecture/system-overview.md) and release contracts for the expanded model.
+
 This report is based on the tables currently defined in the database migrations:
 
 - `users`
