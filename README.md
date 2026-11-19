@@ -36,10 +36,10 @@ Repository inspection on 2026-09-19 found:
 | API | User create/read/update and organisation creation code | Complete authenticated product APIs |
 | Tests | Unit and MVC tests; PostgreSQL Testcontainers repository configuration | Release acceptance, concurrency, tenant, browser and recovery coverage |
 | Frontend | No Angular application yet | Angular/TypeScript board and investigation screens |
-| Infrastructure | Local application configuration, HTTPS enabled on port 8443 | PC server, Compose, CI/CD, VPN, backups and observability |
+| Infrastructure | Dockerfile and private Compose stack for the API and PostgreSQL; local application configuration enables HTTPS | Verified server deployment, CI/CD, VPN, backups and observability |
 | Integrations | No deployment, telemetry or MCP implementation | GitHub/Actions, Grafana stack and MCP tools |
 
-These observations describe files, not passing release evidence. Application tests and deployments were **not run** for this documentation revision. Testcontainers currently references PostgreSQL 13; runtime and image support must be reviewed during foundation work. No Maven wrapper, Docker Compose stack or CI workflow is present yet.
+These observations describe files, not passing release evidence. Testcontainers currently references PostgreSQL 13, while the Compose stack uses PostgreSQL 17; compatibility must be verified. No Maven wrapper or CI workflow is present yet.
 
 ## Planned product
 
@@ -59,6 +59,47 @@ Angular → Spring Boot modular monolith → PostgreSQL.
 The backend integrates with GitHub/Actions and queries Prometheus, Loki and Tempo through authorised application boundaries. Grafana provides deeper investigation. Raw telemetry stays in those systems; TaskForge stores relationships, delivery records, incidents and audit metadata.
 
 The first host is an Ubuntu Server LTS PC accessed through LAN/private VPN, using Docker Compose and separate UAT/release data. Cognito supplies release identity. See the [system overview](docs/architecture/system-overview.md) and [server build plan](docs/delivery/server-build-plan.md).
+
+## Run with Docker Compose
+
+The stack builds the Java 17 API image and starts PostgreSQL 17 with a persistent named volume. Liquibase applies migrations at startup and Hibernate validates the resulting schema. The database is not published to the host. The API listens on host loopback only, using HTTP on port 8081 by default, leaving port 8080 available for DSA Tracker. This is intended for private local or homelab use. The existing API has no authentication and is not ready for public exposure.
+
+Install Docker Engine and the Compose plugin, then run the following from this directory:
+
+~~~sh
+umask 077
+# Only create .env if you do not already have one; preserve it for existing databases.
+printf 'DB_PASSWORD=%s\n' "$(openssl rand -hex 32)" > .env
+docker compose up --build -d
+docker compose ps
+curl -fsS http://127.0.0.1:8081/actuator/health/readiness
+docker compose logs -f app
+~~~
+
+Keep `.env` private and retain it for subsequent starts; the password is provided to both containers as an environment variable and is visible to Docker administrators. It is ignored by Git. A simple password such as `taskpass` is for local development only; use a strong, unique password for deployed environments. Set `APP_PORT` in `.env` to change the host port, or `BIND_ADDRESS` to change the bind address. Stop the stack with `docker compose down` (without `-v`, so the database volume is preserved). PostgreSQL initializes the password only on first creation of the volume: changing `.env` alone does not rotate an existing database password. Back up the database separately and test restoration; a Docker volume is not a backup.
+
+### Access from another PC through the existing Windows Caddy proxy
+
+On the homelab, run TaskForge in WSL and confirm `http://127.0.0.1:8081/actuator/health/readiness` works both in WSL and on the Windows host. Confirm port 8081 is free first. Windows localhost forwarding must be working. Add the following separate site block to the existing `C:\caddy\Caddyfile`, preserving the DSA Tracker site:
+
+~~~caddyfile
+http://taskforge.home.arpa {
+    reverse_proxy 127.0.0.1:8081
+}
+~~~
+
+On Windows, validate and reload the existing Caddy configuration:
+
+~~~powershell
+C:\caddy\caddy.exe validate --config C:\caddy\Caddyfile --adapter caddyfile
+C:\caddy\caddy.exe reload --config C:\caddy\Caddyfile --adapter caddyfile
+~~~
+
+Point `taskforge.home.arpa` at the Windows host's current LAN IP in local DNS or each client's hosts file. From another PC on the trusted LAN, check `http://taskforge.home.arpa/actuator/health/readiness`. A bare IP address continues to select the existing IP-based Caddy site; it does not select TaskForge. Ensure the existing Windows firewall rule allows the client subnet to reach Caddy's port 80. Keep this HTTP, unauthenticated setup on a trusted LAN; do not forward it from the internet. For broader access, add authentication and HTTPS.
+
+For separate UAT and release instances, use distinct Compose project names, private environment files, ports and independently generated passwords, for example `docker compose -p tf-uat --env-file .env.uat up --build -d`. The project name scopes the database volume and network. Keep each environment file for future commands, and never use `down -v` unless intentionally destroying its database. See the [homelab platform runbook](docs/delivery/tf-009-container-platform-runbook.md) for host preparation and isolation checks.
+
+The image build skips tests; run the Maven test suite separately before deployment. Building and starting the stack, migration compatibility, restart behavior, backup/restore and security controls still need verification on the target host. Compose health checks report status but do not automatically restart an unhealthy container.
 
 ## Develop the existing backend
 

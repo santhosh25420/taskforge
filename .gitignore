@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+docs/
 
 ### IntelliJ IDEA ###
 .idea/
@@ -38,3 +39,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Local deployment credentials
+.env
+.env.*
