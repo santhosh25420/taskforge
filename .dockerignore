@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+.env
+.env.*
+target
+docs
+*.md
+**/.DS_Store
+src/main/resources/*.pk12
